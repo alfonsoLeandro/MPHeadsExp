@@ -1,0 +1,44 @@
+name: ${project.name}
+version: ${project.version}
+main: com.github.alfonsoleandro.mpheadsexp.HeadsExp
+api-version: "1.13"
+authors: [lelesape]
+depend: [Vault, MPUtils, PlaceholderAPI]
+description: ${project.description}
+website: http://bit.ly/2mwvHWN
+
+commands:
+  headsExp:
+    description: HeadsExp admin command.
+    aliases: [he,hexp]
+    usage: Command was not registered properly.
+  heads:
+    description: HeadsExp user command
+    aliases: [cabezas, cbz]
+    usage: Command was not registered properly.
+
+permissions:
+  headsExp.version:
+    description: Allows you to check the plugins version
+    default: op
+  headsExp.reload:
+    description: Allows you to reload the plugin
+    default: op
+  headsExp.xp.add:
+    description: Allows you to add xp to another player.
+    default: op
+  headsExp.xp.see:
+    description: Allows you to see another player's xp.
+    default: op
+  headsExp.xp.set:
+    description: Allows you to set another player's xp.
+    default: op
+  headsExp.*:
+    description: Gives access to every permission available
+    default: op
+    children:
+      headsExp.version: true
+      headsExp.reload: true
+      headsExp.add: true
+      headsExp.see: true
+      headsExp.set: true

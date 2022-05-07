@@ -1,0 +1,246 @@
+prefix: '&f[&eMPHeadsExp&f]'
+# The amount of EXP needed to gain a new level.
+exp per level: 1000
+# Whether to allow players to place this plugin's heads on the floor or not.
+allow placing: false
+# If this is set to false, only specified players will be able to drop their head.
+default head enabled: true
+# Settings for the bars that appear at the top of the screen when a player's XP changes.
+boss bars:
+  # When a player is manually added XP or by selling a head.
+  added:
+    # Whether to show this boss bar or not.
+    enabled: true
+    # Sound settings.
+    sound:
+      # The name of the sound.
+      # For reference check this page: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html
+      name: ENTITY_EXPERIENCE_ORB_PICKUP
+      # The volume of this sound.
+      volume: 1.0
+      # The pitch of this sound.
+      pitch: 1.0
+  # When a player reaches a new level from being added XP
+  level up:
+    enabled: true
+    sound:
+      name: ENTITY_PLAYER_LEVELUP
+      volume: 1.0
+      pitch: 1.0
+  set:
+    enabled: true
+    sound:
+      name: ENTITY_VILLAGER_NO
+      volume: 1.0
+      pitch: 1.0
+# The name and description for each head item.
+heads name and lore:
+  name: '&cCabeza de &c&l%type%'
+  lore:
+    - '&fVendela usando'
+    - '&c&l/heads sell'
+    - '&fpara obtener %xp% xp y %money%$'
+  player heads:
+    name: '&c%player% head'
+    lore:
+      - '&fSell this item using'
+      - '&c&l/heads sell'
+      - '&fto get %xp% xp and %balance%% of their balance'
+# Settings for the navigation bar items.
+# (The items at the bottom of the page on a GUI with pages)
+# For these items you can use the following placeholders:
+# %page%: The current page the player is standing on.
+# %nextpage%: The next page number (if the player is in page 1, %nextpage% will be 2)
+# %previouspage%: The previous page number (if the player is in page 2, %previouspage% will be 1)
+# %totalpages%: The total amount of pages.
+gui navigation bar items:
+  # The item at the middle of the page.
+  current page:
+    name: '&c&lPage: &e%page%&f/&e%totalpages%'
+    # Use [] for an empty lore.
+    lore: []
+  # The item to click to go to the next page.
+  next page:
+    name: '&fNext page &e&l-->'
+    lore:
+      - '&fClick here to go'
+      - '&fto page %nextpage%'
+  # The item to click to go to the previous page.
+  previous page:
+    name: '&e&l<-- &fPrevious page'
+    lore:
+      - '&fClick here to go'
+      - '&fto page %previouspage%'
+# Settings for the gui (menu) that will open when doing "/heads info"
+info gui:
+  # The title for the menu
+  title: '&cYour info'
+  # The total size of the menu. Must be a multiple of 9 and lower than 54. (9,18,27,36,45,54).
+  size: 9
+  # The item that will contain the player's info.
+  info item:
+    # Where will this item be place in the menu. Available slots are 0 through size-1.
+    slot: 0
+    # The name for this item.
+    # %player%: The name of the player.
+    # %xp%: The player's total xp
+    # %level%: The player's level.
+    name: '&f&l%player%'
+    # The description for the item.
+    # %player%: The name of the player.
+    # %xp%: The player's total xp
+    # %level%: The player's level.
+    lore:
+      - '&fXP: &c&l%xp%'
+      - '&fLevel: &c&l%level%'
+  # The item that when clicked will show the player what heads are unlocked for them.
+  unlocked heads item:
+    # Where will this item be place in the menu. Available slots are 0 through size-1.
+    slot: 4
+    # The name for this item.
+    name: '&c&lUnlocked heads'
+    # The description for the item.
+    lore:
+      - '&fClick here to see'
+      - '&fhow many heads you'
+      - '&fhave unlocked!'
+  # The item that when clicked will show every head sold by the user.
+  sold heads item:
+    # Where will this item be place in the menu. Available slots are 0 through size-1.
+    slot: 8
+    # The name for this item.
+    name: '&6&lSold heads'
+    # The description for the item.
+    lore:
+      - '&fClick here to see'
+      - '&fhow many heads you'
+      - '&fhave sold!'
+# Settings for the gui (menu) that will open for the players that click on "unlocked heads" on the info gui.
+# In this GUI (menu) players will see a list of every head and they will see if those heads are locked
+# or unlocked for them (locked means mobs won't drop them).
+unlocked heads gui:
+  # The title for the gui.
+  title: '&cUnlocked heads'
+  # Should barrier blocks be shown when a certain head is locked or the head itself?
+  show barrier for locked: true
+  # Strings used in %status%.
+  locked: '&c&lLocked'
+  unlocked: '&a&lUnlocked!'
+  # The settings for each of the head items.
+  heads:
+    # The name of the item
+    # %type%: The mob type this head belongs to.
+    # %status%: either locked or unlocked.
+    # %level%: The level of the player.
+    # %required%: The level required to unlock the head.
+    name: '&f&l%type% head'
+    # The description of the item
+    # %type%: The mob type this head belongs to.
+    # %status%: either locked or unlocked.
+    # %level%: The level of the player.
+    # %required%: The level required to unlock the head.
+    lore:
+      - '&fStatus: %status%'
+      - '&fYour level: &e%level%'
+      - '&fLevel required: &e%required%'
+# Settings for the gui that opens when clicking the sold heads on the info gui.
+sold heads gui:
+  # The title for the guy.
+  title: '&cSold heads'
+  # Settings for each of the items.
+  heads:
+    # The name for each item.
+    # %type%: The type of mob this head belongs to.
+    # %sold%: The amount of heads sold for this type of mob.
+    name: '&f&l%type% &fheads'
+    # The description for this item.
+    # %type%: The type of mob this head belongs to.
+    # %sold%: The amount of heads sold for this type of mob.
+    lore:
+      - '&fSold: &e%sold%'
+  # Item shown when no records data is found for the player.
+  none sold:
+    # The name for the item
+    name: '&cNo heads sold yet!'
+    # The description for the item. Use [] for an empty list.
+    lore:
+      - []
+# The skins, exp and percentage of balance to get from the killed player to give
+# the killer for that head.
+player heads:
+  # The default head, used for players that aren't specified in this list.
+  default head:
+    exp: 10
+    balance: 0.5
+  DarkHero_YT:
+    exp: 100
+    # This is a percentage (20%)
+    balance: 2.0
+# The skins, required level, exp & money to give when sold for
+# each head and the level required for that head to drop.
+heads:
+  BLAZE:
+    url: b78ef2e4cf2c41a2d14bfde9caff10219f5b1bf5b35a49eb51c6467882cb5f0
+    required level: 10
+    exp: 100
+    price: 200
+  CAVE_SPIDER:
+    url: 41645dfd77d09923107b3496e94eeb5c30329f97efc96ed76e226e98224
+    required level: 3
+    exp: 10
+    price: 20
+  CREEPER:
+    url: f4254838c33ea227ffca223dddaabfe0b0215f70da649e944477f44370ca6952
+    required level: 2
+    exp: 7
+    price: 10
+  DROWNED:
+    url: c3f7ccf61dbc3f9fe9a6333cde0c0e14399eb2eea71d34cf223b3ace22051
+    required level: 3
+    exp: 20
+    price: 20
+  PIG:
+    url: 621668ef7cb79dd9c22ce3d1f3f4cb6e2559893b6df4a469514e667c16aa4
+    required level: 1
+    exp: 20
+    price: 20
+  WOLF:
+    url: 69d1d3113ec43ac2961dd59f28175fb4718873c6c448dfca8722317d67
+    required level: 3
+    exp: 40
+    price: 40
+  OCELOT:
+    url: 5657cd5c2989ff97570fec4ddcdc6926a68a3393250c1be1f0b114a1db1
+    required level: 4
+    exp: 43
+    price: 41
+  RABBIT:
+    url: ffecc6b5e6ea5ced74c46e7627be3f0826327fba26386c6cc7863372e9bc
+    required level: 1
+    exp: 5
+    price: 5
+  SHEEP:
+    url: f31f9ccc6b3e32ecf13b8a11ac29cd33d18c95fc73db8a66c5d657ccb8be70
+    required level: 1
+    exp: 20
+    price: 20
+  COW:
+    url: 5d6c6eda942f7f5f71c3161c7306f4aed307d82895f9d2b07ab4525718edc5
+    required level: 1
+    exp: 20
+    price: 20
+  MUSHROOM_COW:
+    url: 2b52841f2fd589e0bc84cbabf9e1c27cb70cac98f8d6b3dd065e55a4dcb70d77
+    required level: 2
+    exp: 30
+    price: 30
+  HORSE:
+    url: 450f992599a55a8311373a5412716bb7f91cf39afadea2517f415d72879a2
+    required level: 2
+    exp: 30
+    price: 30
+  CHICKEN:
+    url: 1638469a599ceef7207537603248a9ab11ff591fd378bea4735b346a7fae893
+    required level: 1
+    exp: 10
+    price: 10

@@ -1,0 +1,90 @@
+no permission: '&cNo permission'
+reloaded: '&aFiles reloaded!'
+# Message sent when an unrecognized command is sent.
+# %command%: the label used (either le or loveExp).
+unknown command: '&cUnknown command. &fTry /%command% help'
+# Message sent when a player wants to know a certain head's worth.
+# %head%: The owner of the head.
+# %money%: The amount of money that head gives when sold.
+# %xp%: The amount of xp that head gives when sold.
+head worth: '&c%head%&f''s head worth is: &e%money%$ &fand &e%xp% &fexperience'
+# Message sent when the player does not have enough level for a head to drop.
+# %level%: the level needed for the head to drop.
+# %type%: the type of entity killed (example: zombie).
+# %current_level%: the player's current level.
+not enough level: '&cYou need to be at least level %level% to get a %type% head, you are currently level %current_level%'
+# Message sent when a mob successfully drops their head.
+# %type%: The type of mob that dropped their head.
+head dropped: '&aThe %type% you just killed dropped their head!'
+# Message sent when a player drops their head.
+# %player%: The name of the player that dropped their head.
+player head dropped: '&aYou just received %player%''s head!'
+# Message sent when a player tries to place one of this plugin's heads on the floor.
+cannot place: '&cYou shouldn''t place that head on the floor, it is highly valuable!'
+# Message sent when a given player name is not online.
+# %name%: The name of the player.
+player not found: '&cPlayer with name %name% not found.'
+# Message sent when trying to add or set a player's XP but with an invalid amount.
+# %input%: the invalid number.
+error amount: '%input% is not a valid number'
+# Message sent when sending "/loveExp xp add player amount"
+# %xp%: The amount of xp added.
+# %player%: the player who has been added xp to.
+# %total%: The total xp of that player after adding the xp.
+added xp: '&aSuccessfully added %xp% XP to %player% (total: %total%) (level: %level%)'
+# Message sent when sending "loveExp xp see player"
+# %player%: The player to see the xp of.
+# %xp%: The xp of the plauer.
+see xp: '&fXP of player %player%: %xp% (level: %level%)'
+# Message sent when sending "/loveExp xp set player amount"
+# %player%: the player to set the xp to.
+# %xp%: The amount of xp the player has.
+set xp: '&aSuccessfully set the XP of %player% to %xp% (level: %level%)'
+# Message sent when a player is trying to sell a head without a head in their hand.
+must be holding head: '&cYou must be holding a valid head in your hand.'
+# Message sent when a player sells heads.
+# %amount%: The amount of sold heads.
+# %type%: The type of mob the head belonged to.
+# %price%: The total amount of money the player got for selling the heads.
+# %xp%: the amount of mobXP the player got for selling those heads.
+# %totalxp%: the total amount of xp of the player after selling the heads.
+head sold: '&aSuccessfully sold %amount% %type% heads for %price%$ and %xp%XP (%totalxp% total xp)'
+# Message sent when a player sells a player head.
+# %amount%: The amount of sold heads.
+# %player%: The name of the player the head belonged to.
+# %price%: The total amount of money the player got for selling the heads.
+# %xp%: the amount of mobXP the player got for selling those heads.
+# %totalxp%: the total amount of xp of the player after selling the heads.
+player head sold: '&aSuccessfully sold %amount% heads of player %player% for %price%$ and %xp%XP (%totalxp% total xp)'
+# Message sent when sending an invalid number.
+# %input%: The invalid number sent.
+invalid number: '&c"&e%input%&c" is not a valid number.'
+# Message sent when sending an invalid type.
+# %input%: The invalid type sent.
+invalid type: '&c"&e%input%&c" is not a valid type.'
+# Message sent when adding heads to yourself.
+# %amount%: The amount of heads added.
+# %type%: The type of head added.
+self added: '&aSuccessfully added %amount%X %type% heads to your inventory'
+# Message sent for the receiver of the heads when they are sent heads
+# %player%: The player who sent those heads
+# %amount%: The amount of heads sent.
+# %type%: The type of mob the heads belong too.
+someone added: '&a%player% just sent you %amount%X %type% heads'
+# Message sent to a player when sending heads to another player.
+# %player%: The player who sent those heads
+# %amount%: The amount of heads sent.
+# %type%: The type of mob the heads belong too.
+added to someone: '&aYou just added %amount%X %type% heads to %player%'
+# Title for the bar that appears at the top of the screen when a player is added XP.
+# %xp%: the added amount of XP.
+# %next%: the amount of xp required to level up.
+added XP bossbar title: '&a&l%xp%XP added! &f(%next%XP needed for the next level)'
+# Title for the bar that appears at the top of the screen when a player reaches a new level.
+# %previous%: the previous level.
+# %new%: the new level.
+level up bossbar title: '&a&lLevel UP! &e(&c%previous% &e-> &a%new%)'
+# Title for the bar that appears at the top of the screen when a player is set XP (le xp set player xp).
+# %previous%: the previous XP.
+# %new%: the new XP.
+set XP bossbar title: '&f&lXP changed &e(&c%previous% &e-> &a%new%)'
