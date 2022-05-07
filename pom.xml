@@ -11,7 +11,7 @@
 
     <name>MPHeadsExp</name>
 
-        <description>Rank up selling mob heads for XP and money.</description>
+        <description>Rank up by selling mob heads for XP and money.</description>
     <properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -79,7 +79,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.16.5-R0.1-SNAPSHOT</version>
+            <version>1.18-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -91,7 +91,7 @@
         <dependency>
             <groupId>com.github.alfonsoLeandro</groupId>
             <artifactId>MPUtils</artifactId>
-            <version>1.8.1</version>
+            <version>1.10.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
