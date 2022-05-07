@@ -1,6 +1,7 @@
-package com.github.alfonsoleandro.mpheadsexp.utils;
+package com.github.alfonsoleandro.mpheadsexp.managers;
 
 import com.github.alfonsoleandro.mpheadsexp.HeadsExp;
+import com.github.alfonsoleandro.mputils.reloadable.Reloadable;
 import com.github.alfonsoleandro.mputils.string.StringUtils;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
@@ -20,14 +21,15 @@ import org.bukkit.persistence.PersistentDataType;
 import java.lang.reflect.Field;
 import java.util.*;
 
-public class Heads implements Reloadable{
+public class HeadsManager extends Reloadable {
 
     private final HeadsExp plugin;
     private Map<EntityType, ItemStack> heads;
     private Map<String, ItemStack> playerHeads;
     private List<String> availableTypes;
 
-    public Heads(HeadsExp plugin){
+    public HeadsManager(HeadsExp plugin){
+        super(plugin);
         this.plugin = plugin;
         preLoadHeads();
         fillAvailableMobTypes();
@@ -187,7 +189,7 @@ public class Heads implements Reloadable{
         heads.keySet().forEach(type -> availableTypes.add(type.toString()));
     }
 
-    public void reload(){
+    public void reload(boolean deep){
         this.preLoadHeads();
         this.fillAvailableMobTypes();
     }

@@ -30,8 +30,8 @@ public class HeadPlaceEvent implements Listener {
 
         if(data.getKeys().stream().anyMatch(k -> k.getKey().equalsIgnoreCase("MPHeads"))){
             event.setCancelled(true);
-            plugin.getConsoleLogger().send(event.getPlayer(),
-                    plugin.getMessagesYaml().getAccess().getString("cannot place"));
+            plugin.getMessageSender().send(event.getPlayer(),
+                    plugin.getLanguageYaml().getAccess().getString("cannot place"));
         }
 
 

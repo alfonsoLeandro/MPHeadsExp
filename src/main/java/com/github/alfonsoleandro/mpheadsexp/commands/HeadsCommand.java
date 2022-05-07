@@ -2,10 +2,11 @@ package com.github.alfonsoleandro.mpheadsexp.commands;
 
 import com.github.alfonsoleandro.mpheadsexp.HeadsExp;
 import com.github.alfonsoleandro.mpheadsexp.managers.LevelsManager;
-import com.github.alfonsoleandro.mpheadsexp.utils.Logger;
-import com.github.alfonsoleandro.mpheadsexp.utils.Reloadable;
+import com.github.alfonsoleandro.mpheadsexp.utils.Message;
 import com.github.alfonsoleandro.mputils.guis.SimpleGUI;
 import com.github.alfonsoleandro.mputils.itemstacks.MPItemStacks;
+import com.github.alfonsoleandro.mputils.managers.MessageSender;
+import com.github.alfonsoleandro.mputils.reloadable.Reloadable;
 import com.github.alfonsoleandro.mputils.string.StringUtils;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Material;
@@ -23,10 +24,11 @@ import org.bukkit.persistence.PersistentDataType;
 import java.util.HashMap;
 import java.util.Map;
 
-public class HeadsCommand implements CommandExecutor, Reloadable {
+//TODO CHANGE HARDCODED MESSAGES FOR CONFIGURABLE ONES
+public class HeadsCommand extends Reloadable implements CommandExecutor {
 
     final private HeadsExp plugin;
-    final private Logger logger;
+    final private MessageSender<Message> messageSender;
     //Messages
     private String noPerm;
     private String unknown;
@@ -40,13 +42,14 @@ public class HeadsCommand implements CommandExecutor, Reloadable {
      * @param plugin The main class instance.
      */
     public HeadsCommand(HeadsExp plugin){
+        super(plugin);
         this.plugin = plugin;
-        this.logger = plugin.getConsoleLogger();
+        this.messageSender = plugin.getMessageSender();
         loadMessages();
     }
 
     private void loadMessages(){
-        FileConfiguration messages = plugin.getMessagesYaml().getAccess();
+        FileConfiguration messages = plugin.getLanguageYaml().getAccess();
 
         noPerm = messages.getString("no permission");
         unknown = messages.getString("unknown command");
@@ -61,18 +64,18 @@ public class HeadsCommand implements CommandExecutor, Reloadable {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if(args.length == 0 || args[0].equalsIgnoreCase("help")) {
-            logger.send(sender, "&6List of commands");
-            logger.send(sender, "&f/"+label+" help");
-            logger.send(sender, "&f/"+label+" worth");
-            logger.send(sender, "&f/"+label+" sell");
-            logger.send(sender, "&f/"+label+" info");
+            messageSender.send(sender, "&6List of commands");
+            messageSender.send(sender, "&f/"+label+" help");
+            messageSender.send(sender, "&f/"+label+" worth");
+            messageSender.send(sender, "&f/"+label+" sell");
+            messageSender.send(sender, "&f/"+label+" info");
 
 
 
 
         }else if(args[0].equalsIgnoreCase("worth")) {
             if(sender instanceof ConsoleCommandSender) {
-                logger.send(sender, "&cThat command can only be sent by a player.");
+                messageSender.send(sender, "&cThat command can only be sent by a player.");
                 return true;
             }
             if(notHasPerm(sender, "headsExp.sell")) return true;
@@ -81,7 +84,7 @@ public class HeadsCommand implements CommandExecutor, Reloadable {
 
             if(!inHand.getType().equals(Material.PLAYER_HEAD) ||
                     !inHand.hasItemMeta()) {
-                logger.send(sender, mstHoldHead);
+                messageSender.send(sender, mstHoldHead);
                 return true;
             }
 
@@ -109,7 +112,7 @@ public class HeadsCommand implements CommandExecutor, Reloadable {
             }
 
             if(isNotHead) {
-                logger.send(sender, mstHoldHead);
+                messageSender.send(sender, mstHoldHead);
                 return true;
             }
 
@@ -121,7 +124,7 @@ public class HeadsCommand implements CommandExecutor, Reloadable {
                 xp = config.getInt("heads." + mobType + ".exp");
             }
 
-            logger.send(sender, headWorth
+            messageSender.send(sender, headWorth
                     .replace("%head%", mobType)
                     .replace("%money%", String.valueOf(price))
                     .replace("%xp%", String.valueOf(xp)));
@@ -131,7 +134,7 @@ public class HeadsCommand implements CommandExecutor, Reloadable {
 
         }else if(args[0].equalsIgnoreCase("sell")) {
             if(sender instanceof ConsoleCommandSender) {
-                logger.send(sender, "&cThat command can only be sent by a player.");
+                messageSender.send(sender, "&cThat command can only be sent by a player.");
                 return true;
             }
             if(notHasPerm(sender, "headsExp.sell")) return true;
@@ -140,7 +143,7 @@ public class HeadsCommand implements CommandExecutor, Reloadable {
 
             if(!inHand.getType().equals(Material.PLAYER_HEAD) ||
                     !inHand.hasItemMeta()) {
-                logger.send(sender, mstHoldHead);
+                messageSender.send(sender, mstHoldHead);
                 return true;
             }
             PersistentDataContainer data = inHand.getItemMeta().getPersistentDataContainer();
@@ -165,7 +168,7 @@ public class HeadsCommand implements CommandExecutor, Reloadable {
             }
 
             if(isNotHead) {
-                logger.send(sender, mstHoldHead);
+                messageSender.send(sender, mstHoldHead);
                 return true;
             }
             if(isPlayerHead){
@@ -182,7 +185,7 @@ public class HeadsCommand implements CommandExecutor, Reloadable {
                 economy.depositPlayer(player, price);
                 manager.addXP(player.getUniqueId(), xp);
 
-                logger.send(player, playerHeadSold
+                messageSender.send(player, playerHeadSold
                         .replace("%amount%", String.valueOf(amount))
                         .replace("%player%", mobType)
                         .replace("%price%", String.valueOf(price))
@@ -212,7 +215,7 @@ public class HeadsCommand implements CommandExecutor, Reloadable {
             economy.depositPlayer(player, price);
             manager.addXP(player.getUniqueId(), xp);
 
-            logger.send(player, headSold
+            messageSender.send(player, headSold
                     .replace("%amount%", String.valueOf(amount))
                     .replace("%type%", mobType)
                     .replace("%price%", String.valueOf(price))
@@ -230,7 +233,7 @@ public class HeadsCommand implements CommandExecutor, Reloadable {
 
         }else if(args[0].equalsIgnoreCase("info")){
             if(sender instanceof ConsoleCommandSender) {
-                logger.send(sender, "&cThat command can only be sent by a player.");
+                messageSender.send(sender, "&cThat command can only be sent by a player.");
                 return true;
             }
             if(notHasPerm(sender, "headsExp.info")) return true;
@@ -245,7 +248,7 @@ public class HeadsCommand implements CommandExecutor, Reloadable {
 
             //unknown command
         }else {
-            logger.send(sender, unknown.replace("%command%", label));
+            messageSender.send(sender, unknown.replace("%command%", label));
         }
 
 
@@ -299,13 +302,13 @@ public class HeadsCommand implements CommandExecutor, Reloadable {
 
     private boolean notHasPerm(CommandSender sender, String permission){
         if(!sender.hasPermission(permission)){
-            logger.send(sender, noPerm);
+            messageSender.send(sender, noPerm);
             return true;
         }
         return false;
     }
 
-    public void reload(){
+    public void reload(boolean deep){
         this.loadMessages();
     }
 

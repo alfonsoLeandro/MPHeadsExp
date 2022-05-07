@@ -30,7 +30,7 @@ public class PlayerKillMobEvent implements Listener {
         ItemStack head;
 
         if(event.getEntityType().equals(EntityType.PLAYER)){
-            head = plugin.getHeads().getPlayerHead(event.getEntity().getName());
+            head = plugin.getHeadsManager().getPlayerHead(event.getEntity().getName());
             if(head == null) return;
             FileConfiguration config = plugin.getConfigYaml().getAccess();
             Player killed = (Player) event.getEntity();
@@ -42,17 +42,17 @@ public class PlayerKillMobEvent implements Listener {
             plugin.getEconomy().withdrawPlayer(killed, amount);
 
             //Messages
-            plugin.getConsoleLogger().send(killer,
-                    plugin.getMessagesYaml().getAccess().getString("player head dropped", "&aYou just received %player%'s head!")
+            plugin.getMessageSender().send(killer,
+                    plugin.getLanguageYaml().getAccess().getString("player head dropped", "&aYou just received %player%'s head!")
                             .replace("%player%", killed.getName()));
 
-            plugin.getConsoleLogger().send(killed,
-                    plugin.getMessagesYaml().getAccess().getString("your head dropped", "&cYou just dropped your head and lost %balance%% of your balance (%amount%)")
+            plugin.getMessageSender().send(killed,
+                    plugin.getLanguageYaml().getAccess().getString("your head dropped", "&cYou just dropped your head and lost %balance%% of your balance (%amount%)")
                             .replace("%balance%", String.valueOf(percentage))
                             .replace("%amount%", String.valueOf(amount)));
 
         }else {
-            head = plugin.getHeads().getMobHead(event.getEntityType());
+            head = plugin.getHeadsManager().getMobHead(event.getEntityType());
             if(head == null) return;
             //TODO leave hardcoded probability?
             if(3 > r.nextInt(10)) return;
@@ -63,15 +63,15 @@ public class PlayerKillMobEvent implements Listener {
 
             //Messages
             if(required > current) {
-                plugin.getConsoleLogger().send(killer,
-                        plugin.getMessagesYaml().getAccess().getString("not enough level", "&cYou need to be at least level %level% to get a %type% head, you are currently level %current_level%")
+                plugin.getMessageSender().send(killer,
+                        plugin.getLanguageYaml().getAccess().getString("not enough level", "&cYou need to be at least level %level% to get a %type% head, you are currently level %current_level%")
                                 .replace("%level%", String.valueOf(required))
                                 .replace("%type%", event.getEntityType().toString())
                                 .replace("%current_level%", String.valueOf(current)));
                 return;
             }
-            plugin.getConsoleLogger().send(killer,
-                    plugin.getMessagesYaml().getAccess().getString("head dropped", "&aThe %type% you just killed dropped their head!")
+            plugin.getMessageSender().send(killer,
+                    plugin.getLanguageYaml().getAccess().getString("head dropped", "&aThe %type% you just killed dropped their head!")
                             .replace("%type%", event.getEntityType().toString()));
         }
 

@@ -1,4 +1,4 @@
-package com.github.alfonsoleandro.mpheadsexp.commands;
+package com.github.alfonsoleandro.mpheadsexp.commands.tabcompleters;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;

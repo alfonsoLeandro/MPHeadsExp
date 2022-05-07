@@ -2,8 +2,9 @@ package com.github.alfonsoleandro.mpheadsexp.commands;
 
 import com.github.alfonsoleandro.mpheadsexp.HeadsExp;
 import com.github.alfonsoleandro.mpheadsexp.managers.LevelsManager;
-import com.github.alfonsoleandro.mpheadsexp.utils.Logger;
-import com.github.alfonsoleandro.mpheadsexp.utils.Reloadable;
+import com.github.alfonsoleandro.mpheadsexp.utils.Message;
+import com.github.alfonsoleandro.mputils.managers.MessageSender;
+import com.github.alfonsoleandro.mputils.reloadable.Reloadable;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -15,10 +16,10 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Locale;
 
-public final class MainCommand implements CommandExecutor, Reloadable {
+public final class MainCommand extends Reloadable implements CommandExecutor {
 
     final private HeadsExp plugin;
-    final private Logger logger;
+    final private MessageSender<Message> messageSender;
     //Messages
     private String noPerm;
     private String reloaded;
@@ -39,13 +40,14 @@ public final class MainCommand implements CommandExecutor, Reloadable {
      * @param plugin The main class instance.
      */
     public MainCommand(HeadsExp plugin){
+        super(plugin);
         this.plugin = plugin;
-        this.logger = plugin.getConsoleLogger();
+        this.messageSender = plugin.getMessageSender();
         loadMessages();
     }
 
     private void loadMessages(){
-        FileConfiguration messages = plugin.getMessagesYaml().getAccess();
+        FileConfiguration messages = plugin.getLanguageYaml().getAccess();
 
         noPerm = messages.getString("no permission");
         reloaded = messages.getString("reloaded");
@@ -67,54 +69,54 @@ public final class MainCommand implements CommandExecutor, Reloadable {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if(args.length == 0 || args[0].equalsIgnoreCase("help")) {
-            logger.send(sender, "&6List of commands");
-            logger.send(sender, "&f/"+label+" help");
-            logger.send(sender, "&f/"+label+" version");
-            logger.send(sender, "&f/"+label+" reload");
-            logger.send(sender, "&f/"+label+" xp (add/set/see) (player) (amount)");
-            logger.send(sender, "&f/"+label+" giveHead (player) (type) <amount>");
+            messageSender.send(sender, "&6List of commands");
+            messageSender.send(sender, "&f/"+label+" help");
+            messageSender.send(sender, "&f/"+label+" version");
+            messageSender.send(sender, "&f/"+label+" reload");
+            messageSender.send(sender, "&f/"+label+" xp (add/set/see) (player) (amount)");
+            messageSender.send(sender, "&f/"+label+" giveHead (player) (type) <amount>");
 
 
         }else if(args[0].equalsIgnoreCase("reload")) {
             if(notHasPerm(sender, "headsExp.reload")) return true;
 
             plugin.reload();
-            logger.send(sender, reloaded);
+            messageSender.send(sender, reloaded);
 
 
         }else if(args[0].equalsIgnoreCase("version")) {
             if(notHasPerm(sender, "headsExp.version")) return true;
-            logger.send(sender, "&fVersion: &e" + plugin.getVersion() + "&f. &aUp to date!");
+            messageSender.send(sender, "&fVersion: &e" + plugin.getVersion() + "&f. &aUp to date!");
 
 
         }else if(args[0].equalsIgnoreCase("xp")) {
             if(args.length < 3 || (!args[1].equalsIgnoreCase("add") && !args[1].equalsIgnoreCase("see") && !args[1].equalsIgnoreCase("set"))) {
-                logger.send(sender, "&cUse: &f/" + label + " xp (add/set/see) (player) (amount)");
+                messageSender.send(sender, "&cUse: &f/" + label + " xp (add/set/see) (player) (amount)");
                 return true;
             }
 
             if(args[1].equalsIgnoreCase("add")) {
                 if(args.length < 4) {
-                    logger.send(sender, "&cUse: &f/" + label + " xp add (player) (amount)");
+                    messageSender.send(sender, "&cUse: &f/" + label + " xp add (player) (amount)");
                     return true;
                 }
                 if(notHasPerm(sender, "headsExp.xp.add")) return true;
                 Player player = Bukkit.getPlayer(args[2]);
                 if(player == null) {
-                    logger.send(sender, playerNotFound.replace("%name%", args[2]));
+                    messageSender.send(sender, playerNotFound.replace("%name%", args[2]));
                     return true;
                 }
                 int xp;
                 try {
                     xp = Integer.parseInt(args[3]);
                 } catch (NumberFormatException e) {
-                    logger.send(sender, errorNumber.replace("%input%", args[3]));
+                    messageSender.send(sender, errorNumber.replace("%input%", args[3]));
                     return true;
                 }
                 LevelsManager manager = plugin.getLevelsManager();
 
                 manager.addXP(player.getUniqueId(), xp);
-                logger.send(sender, addedXP
+                messageSender.send(sender, addedXP
                         .replace("%xp%", String.valueOf(xp))
                         .replace("%player%", args[2])
                         .replace("%total%", String.valueOf(manager.getXP(player.getUniqueId())))
@@ -125,12 +127,12 @@ public final class MainCommand implements CommandExecutor, Reloadable {
                 if(notHasPerm(sender, "headsExp.xp.see")) return true;
                 Player player = Bukkit.getPlayer(args[2]);
                 if(player == null) {
-                    logger.send(sender, playerNotFound.replace("%name%", args[2]));
+                    messageSender.send(sender, playerNotFound.replace("%name%", args[2]));
                     return true;
                 }
                 LevelsManager manager = plugin.getLevelsManager();
 
-                logger.send(sender, seeXP
+                messageSender.send(sender, seeXP
                         .replace("%player%", args[2])
                         .replace("%xp%", String.valueOf(manager.getXP(player.getUniqueId())))
                         .replace("%level%", String.valueOf(manager.getLevel(player.getUniqueId()))));
@@ -138,26 +140,26 @@ public final class MainCommand implements CommandExecutor, Reloadable {
 
             } else {
                 if(args.length < 4) {
-                    logger.send(sender, "&cUse: &f/" + label + " xp set (player) (amount)");
+                    messageSender.send(sender, "&cUse: &f/" + label + " xp set (player) (amount)");
                     return true;
                 }
                 if(notHasPerm(sender, "headsExp.xp.set")) return true;
                 Player player = Bukkit.getPlayer(args[2]);
                 if(player == null) {
-                    logger.send(sender, playerNotFound.replace("%name%", args[2]));
+                    messageSender.send(sender, playerNotFound.replace("%name%", args[2]));
                     return true;
                 }
                 int xp;
                 try {
                     xp = Integer.parseInt(args[3]);
                 } catch (NumberFormatException e) {
-                    logger.send(sender, errorNumber.replace("%input%", args[3]));
+                    messageSender.send(sender, errorNumber.replace("%input%", args[3]));
                     return true;
                 }
                 LevelsManager manager = plugin.getLevelsManager();
 
                 manager.setXP(player.getUniqueId(), xp);
-                logger.send(sender, setXP
+                messageSender.send(sender, setXP
                         .replace("%player%", args[2])
                         .replace("%xp%", String.valueOf(manager.getXP(player.getUniqueId())))
                         .replace("%level%", String.valueOf(manager.getLevel(player.getUniqueId()))));
@@ -167,7 +169,7 @@ public final class MainCommand implements CommandExecutor, Reloadable {
 
         }else if(args[0].equalsIgnoreCase("giveHead")) {
             if(args.length < 3) {
-                logger.send(sender, "&cUse: &f/" + label + " giveHead (player) (type) <amount>");
+                messageSender.send(sender, "&cUse: &f/" + label + " giveHead (player) (type) <amount>");
                 return true;
             }
             if(notHasPerm(sender, "headsExp.giveHead")) return true;
@@ -177,36 +179,36 @@ public final class MainCommand implements CommandExecutor, Reloadable {
                 try {
                     amount = Integer.parseInt(args[3]);
                 } catch (NumberFormatException e) {
-                    logger.send(sender, invalidNumber.replace("%input%", args[3]));
+                    messageSender.send(sender, invalidNumber.replace("%input%", args[3]));
                     return true;
                 }
             }
 
             Player player = Bukkit.getPlayer(args[1]);
             if(player == null) {
-                logger.send(sender, playerNotFound.replace("%name%", args[1]));
+                messageSender.send(sender, playerNotFound.replace("%name%", args[1]));
                 return true;
             }
             String headType = args[2].toUpperCase(Locale.ROOT);
             if(!plugin.getLevelsManager().containsType(headType)) {
-                logger.send(sender, invalidType.replace("%input%", headType));
+                messageSender.send(sender, invalidType.replace("%input%", headType));
                 return true;
             }
 
-            ItemStack item = plugin.getHeads().getMobHead(EntityType.valueOf(headType));
+            ItemStack item = plugin.getHeadsManager().getMobHead(EntityType.valueOf(headType));
             item.setAmount(amount);
             player.getInventory().addItem(item);
 
             if(player.equals(sender)) {
-                logger.send(sender, selfAdded
+                messageSender.send(sender, selfAdded
                         .replace("%amount%", String.valueOf(amount))
                         .replace("%type%", headType));
             } else {
-                logger.send(sender, addedToSmn
+                messageSender.send(sender, addedToSmn
                         .replace("%player%", args[1])
                         .replace("%amount%", String.valueOf(amount))
                         .replace("%type%", headType));
-                logger.send(player, smnAdded
+                messageSender.send(player, smnAdded
                         .replace("%player%", sender.getName())
                         .replace("%amount%", String.valueOf(amount))
                         .replace("%type%", headType));
@@ -215,7 +217,7 @@ public final class MainCommand implements CommandExecutor, Reloadable {
 
             //unknown command
         }else {
-            logger.send(sender, unknown.replace("%command%", label));
+            messageSender.send(sender, unknown.replace("%command%", label));
         }
 
 
@@ -226,13 +228,13 @@ public final class MainCommand implements CommandExecutor, Reloadable {
 
     private boolean notHasPerm(CommandSender sender, String permission){
         if(!sender.hasPermission(permission)){
-            logger.send(sender, noPerm);
+            messageSender.send(sender, noPerm);
             return true;
         }
         return false;
     }
 
-    public void reload(){
+    public void reload(boolean deep){
         this.loadMessages();
     }
 }

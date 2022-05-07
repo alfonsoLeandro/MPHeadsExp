@@ -1,45 +1,39 @@
 package com.github.alfonsoleandro.mpheadsexp;
 
 import com.github.alfonsoleandro.mpheadsexp.commands.HeadsCommand;
-import com.github.alfonsoleandro.mpheadsexp.commands.HeadsCommandTabAutoCompleter;
+import com.github.alfonsoleandro.mpheadsexp.commands.tabcompleters.HeadsCommandTabAutoCompleter;
 import com.github.alfonsoleandro.mpheadsexp.commands.MainCommand;
-import com.github.alfonsoleandro.mpheadsexp.commands.MainCommandTabAutoCompleter;
+import com.github.alfonsoleandro.mpheadsexp.commands.tabcompleters.MainCommandTabAutoCompleter;
 import com.github.alfonsoleandro.mpheadsexp.events.HeadPlaceEvent;
 import com.github.alfonsoleandro.mpheadsexp.events.InfoGUIClickEvent;
 import com.github.alfonsoleandro.mpheadsexp.events.PlayerKillMobEvent;
+import com.github.alfonsoleandro.mpheadsexp.managers.HeadsManager;
 import com.github.alfonsoleandro.mpheadsexp.managers.LevelsManager;
-import com.github.alfonsoleandro.mpheadsexp.utils.Heads;
-import com.github.alfonsoleandro.mpheadsexp.utils.Logger;
-import com.github.alfonsoleandro.mpheadsexp.utils.PAPIPlaceholder;
-import com.github.alfonsoleandro.mpheadsexp.utils.Reloadable;
+import com.github.alfonsoleandro.mpheadsexp.utils.*;
 import com.github.alfonsoleandro.mputils.files.YamlFile;
+import com.github.alfonsoleandro.mputils.managers.MessageSender;
+import com.github.alfonsoleandro.mputils.reloadable.ReloaderPlugin;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+public final class HeadsExp extends ReloaderPlugin {
 
-public final class HeadsExp extends JavaPlugin {
-
-    final private Set<Reloadable> reloadables = new HashSet<>();
-    final private PluginDescriptionFile pdfFile = getDescription();
-    final private String version = pdfFile.getVersion();
-    final private char color = 'e';
-    private Logger logger;
+    private final String version = getDescription().getVersion();
+    private final char color = 'e';
+    //Managers
+    private MessageSender<Message> messageSender;
     private LevelsManager levelsManager;
-    private Heads heads;
+    private HeadsManager headsManager;
+    //Hooks
     private Economy economy;
     private PAPIPlaceholder papiExpansion;
+    //YAML files
     private YamlFile configYaml;
-    private YamlFile messagesYaml;
+    private YamlFile languageYaml;
     private YamlFile playersYaml;
     private YamlFile recordsYaml;
 
@@ -50,24 +44,23 @@ public final class HeadsExp extends JavaPlugin {
     @Override
     public void onEnable() {
         reloadFiles();
-        this.logger = new Logger(this);
-        this.logger.send("&aEnabled&f. Version: &e" + version);
-        this.logger.send("&fThank you for using my plugin! &" + color + pdfFile.getName() + "&f By " + pdfFile.getAuthors().get(0));
-        this.logger.send("&fJoin my discord server at &chttps://discordapp.com/invite/ZznhQud");
-        this.logger.send("Please consider subscribing to my yt channel: &c" + pdfFile.getWebsite());
+        this.messageSender = new MessageSender<>(this, Message.values(), this.languageYaml, "lang.prefix");
+        this.messageSender.send("&aEnabled&f. Version: &e" + this.version);
+        this.messageSender.send("&fThank you for using my plugin! &" + this.color + getDescription().getName() + "&f By " + getDescription().getAuthors().get(0));
+        this.messageSender.send("&fJoin my discord server at &chttps://discordapp.com/invite/ZznhQud");
+        this.messageSender.send("Please consider subscribing to my yt channel: &c" + getDescription().getWebsite());
         this.levelsManager = new LevelsManager(this);
-        this.heads = new Heads(this);
-        this.registerPAPIExpansion();
+        this.headsManager = new HeadsManager(this);
+        registerPAPIExpansion();
         if(setupEconomy()){
-            this.logger.send("&aPlugin Vault and economy found, economy hooked");
+            this.messageSender.send("&aPlugin Vault and economy found, economy hooked");
         }else {
-            this.logger.send("&cPlugin Vault or an economy plugin not found, disabling LoveEXP");
-            this.setEnabled(false);
+            this.messageSender.send("&cPlugin Vault or an economy plugin not found, disabling LoveEXP");
+            setEnabled(false);
             return;
         }
         registerEvents();
         registerCommands();
-        reloadables.addAll(Arrays.asList(logger, levelsManager, heads));
     }
 
     /**
@@ -75,25 +68,20 @@ public final class HeadsExp extends JavaPlugin {
      */
     @Override
     public void onDisable() {
-        this.logger.send("&cDisabled&f. Version: &e" + version);
-        this.logger.send("&fThank you for using my plugin! &" + color + pdfFile.getName() + "&f By " + pdfFile.getAuthors().get(0));
-        this.logger.send("&fJoin my discord server at &chttps://discordapp.com/invite/ZznhQud");
-        this.logger.send("Please consider subscribing to my yt channel: &c" + pdfFile.getWebsite());
+        this.messageSender.send("&cDisabled&f. Version: &e" + this.version);
+        this.messageSender.send("&fThank you for using my plugin! &" + this.color + getDescription().getName() + "&f By " + getDescription().getAuthors().get(0));
+        this.messageSender.send("&fJoin my discord server at &chttps://discordapp.com/invite/ZznhQud");
+        this.messageSender.send("Please consider subscribing to my yt channel: &c" + getDescription().getWebsite());
         this.levelsManager.saveLevelsToFile();
         this.unRegisterPAPIExpansion();
     }
 
 
     public boolean setupEconomy() {
-        Plugin vault = getServer().getPluginManager().getPlugin("Vault");
-        if(vault == null || !vault.isEnabled()) {
-            return false;
-        }
+        if(getServer().getPluginManager().isPluginEnabled("Vault")) return false;
         RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
-        if(rsp==null) {
-            return false;
-        }
-        economy = rsp.getProvider();
+        if(rsp == null) return false;
+        this.economy = rsp.getProvider();
         return true;
     }
 
@@ -112,10 +100,10 @@ public final class HeadsExp extends JavaPlugin {
      * Registers and reloads plugin files.
      */
     public void reloadFiles() {
-        configYaml = new YamlFile(this, "config.yml");
-        messagesYaml = new YamlFile(this, "messages.yml");
-        playersYaml = new YamlFile(this, "players.yml");
-        recordsYaml = new YamlFile(this, "selling records.yml");
+        this.configYaml = new YamlFile(this, "config.yml");
+        this.languageYaml = new YamlFile(this, "language.yml");
+        this.playersYaml = new YamlFile(this, "players.yml");
+        this.recordsYaml = new YamlFile(this, "selling records.yml");
     }
 
 
@@ -138,33 +126,40 @@ public final class HeadsExp extends JavaPlugin {
         PluginCommand headsCommand = getCommand("heads");
 
         if(mainCommand == null || headsCommand == null){
-            this.logger.send("&cCommands were not registered properly.");
-            this.logger.send("&cPlease check your plugin.yml is valid. Disabling LoveExp.");
+            this.messageSender.send("&cCommands were not registered properly.");
+            this.messageSender.send("&cPlease check your plugin.yml is valid. Disabling LoveExp.");
             this.setEnabled(false);
             return;
         }
 
-        MainCommand mainCommandExecutor = new MainCommand(this);
-        HeadsCommand headsCommandExecutor = new HeadsCommand(this);
-        reloadables.add(mainCommandExecutor);
-        reloadables.add(headsCommandExecutor);
-
-
-        mainCommand.setExecutor(mainCommandExecutor);
+        mainCommand.setExecutor(new MainCommand(this));
         mainCommand.setTabCompleter(new MainCommandTabAutoCompleter(this));
-        headsCommand.setExecutor(headsCommandExecutor);
+        headsCommand.setExecutor(new HeadsCommand(this));
         headsCommand.setTabCompleter(new HeadsCommandTabAutoCompleter());
     }
 
-    public void reload(){
-        this.reloadFiles();
-        for(Reloadable reloadable : reloadables){
-            reloadable.reload();
+    public void reload(boolean deep){
+        reloadFiles();
+        super.reload(deep);
+    }
+
+
+    public void registerPAPIExpansion(){
+        if(getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")){
+            this.messageSender.send("&aPlaceholderAPI found, the placeholder has been registered successfully");
+            this.papiExpansion = new PAPIPlaceholder(this);
+            this.papiExpansion.register();
+        }else{
+            this.messageSender.send("&cPlaceholderAPI not found, the placeholder was not registered");
         }
     }
 
-    public Logger getConsoleLogger(){
-        return this.logger;
+    public void unRegisterPAPIExpansion(){
+        if(this.papiExpansion != null) this.papiExpansion.unregister();
+    }
+
+    public MessageSender<Message> getMessageSender(){
+        return this.messageSender;
     }
 
     public LevelsManager getLevelsManager(){
@@ -172,32 +167,13 @@ public final class HeadsExp extends JavaPlugin {
     }
 
 
-    public Heads getHeads(){
-        return this.heads;
+    public HeadsManager getHeadsManager(){
+        return this.headsManager;
     }
 
 
     public Economy getEconomy(){
         return this.economy;
-    }
-
-    public void registerPAPIExpansion(){
-        Plugin papi = getServer().getPluginManager().getPlugin("PlaceholderAPI");
-        if(papi != null && papi.isEnabled()){
-            logger.send("&aPlaceholderAPI found, the placeholder has been registered successfully");
-            papiExpansion = new PAPIPlaceholder(this);
-            papiExpansion.register();
-        }else{
-            logger.send("&cPlaceholderAPI not found, the placeholder was not registered");
-        }
-    }
-
-    public void unRegisterPAPIExpansion(){
-        try{
-            papiExpansion.unregister();
-        }catch (Exception ignored){
-            assert true;
-        }
     }
 
     @Override
@@ -214,11 +190,11 @@ public final class HeadsExp extends JavaPlugin {
     }
 
     /**
-     * Get the messages YamlFile.
-     * @return The YamlFile containing the messages file.
+     * Get the language YamlFile.
+     * @return The YamlFile containing the language file.
      */
-    public YamlFile getMessagesYaml(){
-        return this.messagesYaml;
+    public YamlFile getLanguageYaml(){
+        return this.languageYaml;
     }
 
     /**

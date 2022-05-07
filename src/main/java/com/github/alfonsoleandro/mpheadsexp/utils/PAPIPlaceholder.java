@@ -25,12 +25,12 @@ public class PAPIPlaceholder extends PlaceholderExpansion {
 
     @Override
     public @NotNull String getAuthor(){
-        return plugin.getDescription().getAuthors().toString();
+        return this.plugin.getDescription().getAuthors().toString();
     }
 
     @Override
     public @NotNull String getVersion(){
-        return plugin.getDescription().getVersion();
+        return this.plugin.getDescription().getVersion();
     }
 
     /*
@@ -68,11 +68,11 @@ public class PAPIPlaceholder extends PlaceholderExpansion {
 
         // %MPHeadsExp_level%
         if(identifier.equals("level")){
-            return String.valueOf(plugin.getLevelsManager().getLevel(player.getUniqueId()));
+            return String.valueOf(this.plugin.getLevelsManager().getLevel(player.getUniqueId()));
         }
         // %MPHeadsExpp_xp%
         if(identifier.equals("xp") || identifier.equals("exp")){
-            return String.valueOf(plugin.getLevelsManager().getXP(player.getUniqueId()));
+            return String.valueOf(this.plugin.getLevelsManager().getXP(player.getUniqueId()));
         }
 
         // We return null if an invalid placeholder (f.e. %someplugin_placeholder3%)

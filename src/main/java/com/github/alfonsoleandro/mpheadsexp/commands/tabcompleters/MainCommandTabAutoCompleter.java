@@ -1,4 +1,4 @@
-package com.github.alfonsoleandro.mpheadsexp.commands;
+package com.github.alfonsoleandro.mpheadsexp.commands.tabcompleters;
 
 import com.github.alfonsoleandro.mpheadsexp.HeadsExp;
 import org.bukkit.command.Command;
@@ -75,7 +75,7 @@ public class MainCommandTabAutoCompleter implements TabCompleter {
                     lista.add("set");
                 }
             }else if(args[0].equalsIgnoreCase("giveHead")){
-                return null;
+                return null; //Returns list of players
             }
 
 
@@ -84,7 +84,7 @@ public class MainCommandTabAutoCompleter implements TabCompleter {
                 return null;
 
             }else if(args[0].equalsIgnoreCase("giveHead")){
-                return plugin.getHeads().getAvailableTypes();
+                return plugin.getHeadsManager().getAvailableTypes();
             }
 
         }else if(args.length == 4){

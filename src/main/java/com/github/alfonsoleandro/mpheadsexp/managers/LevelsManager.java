@@ -208,7 +208,7 @@ public class LevelsManager implements Reloadable {
     //Util functions
     public void reload(){
         FileConfiguration config = plugin.getConfigYaml().getAccess();
-        FileConfiguration messages = plugin.getMessagesYaml().getAccess();
+        FileConfiguration messages = plugin.getLanguageYaml().getAccess();
 
         this.expPerLevel = Math.max(config.getInt("exp per level"), 1);
 
