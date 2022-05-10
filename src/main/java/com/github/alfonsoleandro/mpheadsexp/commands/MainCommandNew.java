@@ -4,9 +4,9 @@ import com.github.alfonsoleandro.chestrestock.ChestRestockPlus;
 import com.github.alfonsoleandro.chestrestock.commands.COR.*;
 import com.github.alfonsoleandro.mpheadsexp.HeadsExp;
 import com.github.alfonsoleandro.mpheadsexp.commands.cor.AbstractHandler;
-import com.github.alfonsoleandro.mpheadsexp.commands.cor.HelpHandler;
-import com.github.alfonsoleandro.mpheadsexp.commands.cor.ReloadHandler;
-import com.github.alfonsoleandro.mpheadsexp.commands.cor.VersionHandler;
+import com.github.alfonsoleandro.mpheadsexp.commands.cor.maincommand.MCHelpHandler;
+import com.github.alfonsoleandro.mpheadsexp.commands.cor.maincommand.MCReloadHandler;
+import com.github.alfonsoleandro.mpheadsexp.commands.cor.maincommand.MCVersionHandler;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -24,9 +24,9 @@ public final class MainCommandNew implements CommandExecutor {
      * @param plugin The main class instance.
      */
     public MainCommandNew(HeadsExp plugin){
-        this.COR = new HelpHandler(plugin,
-                 new VersionHandler(plugin,
-                         new ReloadHandler(plugin,
+        this.COR = new MCHelpHandler(plugin,
+                 new MCVersionHandler(plugin,
+                         new MCReloadHandler(plugin,
                                          null))
         );
     }

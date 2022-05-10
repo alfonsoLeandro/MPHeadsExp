@@ -44,7 +44,7 @@ public final class HeadsExp extends ReloaderPlugin {
     @Override
     public void onEnable() {
         reloadFiles();
-        this.messageSender = new MessageSender<>(this, Message.values(), this.languageYaml, "lang.prefix");
+        this.messageSender = new MessageSender<>(this, Message.values(), this.languageYaml, "prefix");
         this.messageSender.send("&aEnabled&f. Version: &e" + this.version);
         this.messageSender.send("&fThank you for using my plugin! &" + this.color + getDescription().getName() + "&f By " + getDescription().getAuthors().get(0));
         this.messageSender.send("&fJoin my discord server at &chttps://discordapp.com/invite/ZznhQud");

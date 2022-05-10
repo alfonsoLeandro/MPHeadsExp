@@ -1,4 +1,3 @@
-prefix: '&f[&eMPHeadsExp&f]'
 # The amount of EXP needed to gain a new level.
 exp per level: 1000
 # Whether to allow players to place this plugin's heads on the floor or not.

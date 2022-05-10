@@ -1,11 +1,12 @@
-package com.github.alfonsoleandro.mpheadsexp.commands.cor;
+package com.github.alfonsoleandro.mpheadsexp.commands.cor.maincommand;
 
 import com.github.alfonsoleandro.mpheadsexp.HeadsExp;
+import com.github.alfonsoleandro.mpheadsexp.commands.cor.AbstractHandler;
 import org.bukkit.command.CommandSender;
 
-public class HelpHandler extends AbstractHandler{
+public class MCHelpHandler extends AbstractHandler {
 
-    public HelpHandler(HeadsExp plugin, AbstractHandler successor) {
+    public MCHelpHandler(HeadsExp plugin, AbstractHandler successor) {
         super(plugin, successor);
     }
 
@@ -20,11 +21,8 @@ public class HelpHandler extends AbstractHandler{
         this.messageSender.send(sender, "&f/"+label+" help");
         this.messageSender.send(sender, "&f/"+label+" version");
         this.messageSender.send(sender, "&f/"+label+" reload");
-        this.messageSender.send(sender, "&f/"+label+" chests");
-//        this.messageSender.send(sender, "&f/"+label+" loadChests");
-//        this.messageSender.send(sender, "&f/"+label+" get (chest name)");
-//        this.messageSender.send(sender, "&f/"+label+" settings");
-//        this.messageSender.send(sender, "&f/"+label+" create (chest name)");
-//        this.messageSender.send(sender, "&f/"+label+" resetCooldowns");
+        this.messageSender.send(sender, "&f/"+label+" xp (add/set/see) (player) (amount)");
+        this.messageSender.send(sender, "&f/"+label+" giveHead (player) (type) <amount>");
+
     }
 }

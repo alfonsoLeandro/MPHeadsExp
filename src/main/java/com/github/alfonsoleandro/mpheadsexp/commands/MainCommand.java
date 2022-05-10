@@ -1,6 +1,10 @@
 package com.github.alfonsoleandro.mpheadsexp.commands;
 
 import com.github.alfonsoleandro.mpheadsexp.HeadsExp;
+import com.github.alfonsoleandro.mpheadsexp.commands.cor.AbstractHandler;
+import com.github.alfonsoleandro.mpheadsexp.commands.cor.maincommand.MCHelpHandler;
+import com.github.alfonsoleandro.mpheadsexp.commands.cor.maincommand.MCReloadHandler;
+import com.github.alfonsoleandro.mpheadsexp.commands.cor.maincommand.MCVersionHandler;
 import com.github.alfonsoleandro.mpheadsexp.managers.LevelsManager;
 import com.github.alfonsoleandro.mpheadsexp.utils.Message;
 import com.github.alfonsoleandro.mputils.managers.MessageSender;
@@ -13,6 +17,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
 
@@ -20,6 +25,7 @@ public final class MainCommand extends Reloadable implements CommandExecutor {
 
     final private HeadsExp plugin;
     final private MessageSender<Message> messageSender;
+    private final AbstractHandler commandHandler;
     //Messages
     private String noPerm;
     private String reloaded;
@@ -43,6 +49,11 @@ public final class MainCommand extends Reloadable implements CommandExecutor {
         super(plugin);
         this.plugin = plugin;
         this.messageSender = plugin.getMessageSender();
+        this.commandHandler = new MCHelpHandler(plugin,
+                new MCVersionHandler(plugin,
+                        new MCReloadHandler(plugin, null)
+                )
+        );
         loadMessages();
     }
 
@@ -67,27 +78,10 @@ public final class MainCommand extends Reloadable implements CommandExecutor {
 
 
     @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
+        this.commandHandler.handle(sender, label, args);
+
         if(args.length == 0 || args[0].equalsIgnoreCase("help")) {
-            messageSender.send(sender, "&6List of commands");
-            messageSender.send(sender, "&f/"+label+" help");
-            messageSender.send(sender, "&f/"+label+" version");
-            messageSender.send(sender, "&f/"+label+" reload");
-            messageSender.send(sender, "&f/"+label+" xp (add/set/see) (player) (amount)");
-            messageSender.send(sender, "&f/"+label+" giveHead (player) (type) <amount>");
-
-
-        }else if(args[0].equalsIgnoreCase("reload")) {
-            if(notHasPerm(sender, "headsExp.reload")) return true;
-
-            plugin.reload();
-            messageSender.send(sender, reloaded);
-
-
-        }else if(args[0].equalsIgnoreCase("version")) {
-            if(notHasPerm(sender, "headsExp.version")) return true;
-            messageSender.send(sender, "&fVersion: &e" + plugin.getVersion() + "&f. &aUp to date!");
-
 
         }else if(args[0].equalsIgnoreCase("xp")) {
             if(args.length < 3 || (!args[1].equalsIgnoreCase("add") && !args[1].equalsIgnoreCase("see") && !args[1].equalsIgnoreCase("set"))) {

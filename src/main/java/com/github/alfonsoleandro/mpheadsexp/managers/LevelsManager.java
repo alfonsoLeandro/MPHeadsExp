@@ -2,8 +2,8 @@ package com.github.alfonsoleandro.mpheadsexp.managers;
 
 import com.github.alfonsoleandro.mpheadsexp.HeadsExp;
 import com.github.alfonsoleandro.mpheadsexp.utils.PreviousBarObjects;
-import com.github.alfonsoleandro.mpheadsexp.utils.Reloadable;
 import com.github.alfonsoleandro.mpheadsexp.utils.SoundSettings;
+import com.github.alfonsoleandro.mputils.reloadable.Reloadable;
 import com.github.alfonsoleandro.mputils.string.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
-public class LevelsManager implements Reloadable {
+public class LevelsManager extends Reloadable {
 
     private final Map<Player, PreviousBarObjects> bossBars = new HashMap<>();
     private final Map<UUID, Integer> players = new HashMap<>();
@@ -36,6 +36,7 @@ public class LevelsManager implements Reloadable {
 
 
     public LevelsManager(HeadsExp plugin){
+        super(plugin);
         this.plugin = plugin;
         loadLevelsFromFile();
         reload();
@@ -205,32 +206,6 @@ public class LevelsManager implements Reloadable {
 
 
 
-    //Util functions
-    public void reload(){
-        FileConfiguration config = plugin.getConfigYaml().getAccess();
-        FileConfiguration messages = plugin.getLanguageYaml().getAccess();
-
-        this.expPerLevel = Math.max(config.getInt("exp per level"), 1);
-
-        this.addedXPBossbarTitle = messages.getString("added XP bossbar title");
-        this.levelUpBossbarTitle = messages.getString("level up bossbar title");
-        this.setXPBossbarTitle = messages.getString("set XP bossbar title");
-
-        this.addedXPBossbarSound = new SoundSettings(
-                config.getString("boss bars.added.sound.name"),
-                config.getDouble("boss bars.added.sound.volume"),
-                config.getDouble("boss bars.added.sound.pitch"));
-        this.levelUpXPBossbarSound = new SoundSettings(
-                config.getString("boss bars.level up.sound.name"),
-                config.getDouble("boss bars.level up.sound.volume"),
-                config.getDouble("boss bars.level up.sound.pitch"));
-        this.setXPBossbarSound = new SoundSettings(
-                config.getString("boss bars.set.sound.name"),
-                config.getDouble("boss bars.set.sound.volume"),
-                config.getDouble("boss bars.set.sound.pitch"));
-
-        loadRequiredLevelsFromFile();
-    }
 
 
     public void loadRequiredLevelsFromFile(){
@@ -261,5 +236,33 @@ public class LevelsManager implements Reloadable {
             players.set("players."+player, this.players.get(player));
         }
         plugin.getPlayersYaml().save();
+    }
+
+    //Util functions
+    @Override
+    public void reload(boolean deep){
+        FileConfiguration config = plugin.getConfigYaml().getAccess();
+        FileConfiguration messages = plugin.getLanguageYaml().getAccess();
+
+        this.expPerLevel = Math.max(config.getInt("exp per level"), 1);
+
+        this.addedXPBossbarTitle = messages.getString("added XP bossbar title");
+        this.levelUpBossbarTitle = messages.getString("level up bossbar title");
+        this.setXPBossbarTitle = messages.getString("set XP bossbar title");
+
+        this.addedXPBossbarSound = new SoundSettings(
+                config.getString("boss bars.added.sound.name"),
+                config.getDouble("boss bars.added.sound.volume"),
+                config.getDouble("boss bars.added.sound.pitch"));
+        this.levelUpXPBossbarSound = new SoundSettings(
+                config.getString("boss bars.level up.sound.name"),
+                config.getDouble("boss bars.level up.sound.volume"),
+                config.getDouble("boss bars.level up.sound.pitch"));
+        this.setXPBossbarSound = new SoundSettings(
+                config.getString("boss bars.set.sound.name"),
+                config.getDouble("boss bars.set.sound.volume"),
+                config.getDouble("boss bars.set.sound.pitch"));
+
+        loadRequiredLevelsFromFile();
     }
 }

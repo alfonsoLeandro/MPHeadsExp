@@ -1,5 +1,6 @@
+prefix: '&f[&eMPHeadsExp&f]'
 no permission: '&cNo permission'
-reloaded: '&aFiles reloaded!'
+reloaded: '&aPlugin reloaded!'
 # Message sent when an unrecognized command is sent.
 # %command%: the label used (either le or loveExp).
 unknown command: '&cUnknown command. &fTry /%command% help'
