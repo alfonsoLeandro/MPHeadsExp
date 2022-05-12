@@ -11,9 +11,9 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Locale;
 
-public class MCGiveHeadHandler extends AbstractHandler {
+public class MainCommandGiveHeadHandler extends AbstractHandler {
 
-    public MCGiveHeadHandler(HeadsExp plugin, AbstractHandler successor) {
+    public MainCommandGiveHeadHandler(HeadsExp plugin, AbstractHandler successor) {
         super(plugin, successor);
     }
 

@@ -8,9 +8,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class MCXPHandler extends AbstractHandler {
+public class MainCommandXPHandler extends AbstractHandler {
 
-    public MCXPHandler(HeadsExp plugin, AbstractHandler successor) {
+    public MainCommandXPHandler(HeadsExp plugin, AbstractHandler successor) {
         super(plugin, successor);
     }
 

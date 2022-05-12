@@ -5,23 +5,24 @@ import com.github.alfonsoleandro.mpheadsexp.commands.cor.AbstractHandler;
 import com.github.alfonsoleandro.mpheadsexp.utils.Message;
 import org.bukkit.command.CommandSender;
 
-public class MCVersionHandler extends AbstractHandler {
+public class MainCommandReloadHandler extends AbstractHandler {
 
-    public MCVersionHandler(HeadsExp plugin, AbstractHandler successor) {
+    public MainCommandReloadHandler(HeadsExp plugin, AbstractHandler successor) {
         super(plugin, successor);
     }
 
     @Override
     protected boolean meetsCondition(CommandSender sender, String label, String[] args) {
-        return args[0].equalsIgnoreCase("version");
+        return args[0].equalsIgnoreCase("reload");
     }
 
     @Override
     protected void internalHandle(CommandSender sender, String label, String[] args) {
-        if(!sender.hasPermission("HeadsExp.version")) {
+        if(!sender.hasPermission("HeadsExp.reload")) {
             this.messageSender.send(sender, Message.NO_PERMISSION);
             return;
         }
-        this.messageSender.send(sender, "&fVersion: &e"+ this.plugin.getVersion()+"&f. &aUp to date!");
+        this.plugin.reload(false);
+        this.messageSender.send(sender, Message.RELOADED);
     }
 }

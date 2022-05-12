@@ -4,9 +4,9 @@ import com.github.alfonsoleandro.mpheadsexp.HeadsExp;
 import com.github.alfonsoleandro.mpheadsexp.commands.cor.AbstractHandler;
 import org.bukkit.command.CommandSender;
 
-public class MCHelpHandler extends AbstractHandler {
+public class MainCommandHelpHandler extends AbstractHandler {
 
-    public MCHelpHandler(HeadsExp plugin, AbstractHandler successor) {
+    public MainCommandHelpHandler(HeadsExp plugin, AbstractHandler successor) {
         super(plugin, successor);
     }
 

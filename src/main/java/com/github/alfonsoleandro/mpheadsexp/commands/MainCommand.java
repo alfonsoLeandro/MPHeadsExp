@@ -18,11 +18,11 @@ public final class MainCommand implements CommandExecutor {
      * @param plugin The main class instance.
      */
     public MainCommand(HeadsExp plugin){
-        this.commandHandler = new MCHelpHandler(plugin,
-                new MCVersionHandler(plugin,
-                        new MCReloadHandler(plugin,
-                                new MCXPHandler(plugin,
-                                        new MCGiveHeadHandler(plugin, null)
+        this.commandHandler = new MainCommandHelpHandler(plugin,
+                new MainCommandVersionHandler(plugin,
+                        new MainCommandReloadHandler(plugin,
+                                new MainCommandXPHandler(plugin,
+                                        new MainCommandGiveHeadHandler(plugin, null)
                                 )
                         )
                 )
@@ -33,7 +33,7 @@ public final class MainCommand implements CommandExecutor {
 
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String[] args) {
         this.commandHandler.handle(sender, label, args);
         return true;
     }
