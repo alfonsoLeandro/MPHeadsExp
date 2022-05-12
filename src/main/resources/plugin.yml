@@ -11,11 +11,10 @@ website: http://bit.ly/2mwvHWN
 commands:
   headsExp:
     description: HeadsExp admin command.
-    aliases: [he,hexp]
+    aliases: [he,hexp, hxp]
     usage: Command was not registered properly.
   heads:
     description: HeadsExp user command
-    aliases: [cabezas, cbz]
     usage: Command was not registered properly.
 
 permissions:
@@ -34,12 +33,16 @@ permissions:
   HeadsExp.xp.set:
     description: Allows you to set another player's xp.
     default: op
+  HeadsExp.giveHead:
+    description: Allows you to give heads to other players.
+    default: op
   HeadsExp.*:
     description: Gives access to every permission available
     default: op
     children:
       HeadsExp.version: true
       HeadsExp.reload: true
+      HeadsExp.giveHead: true
       HeadsExp.xp.add: true
       HeadsExp.xp.see: true
       HeadsExp.xp.set: true

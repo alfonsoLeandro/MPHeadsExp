@@ -14,6 +14,10 @@ public enum Message implements MessageEnum {
     ADDED_XP("&aSuccessfully added %xp% XP to %player% (total: %total%) (level: %level%)"),
     SET_XP("&aSuccessfully set the XP of %player% to %xp% (level: %level%)"),
     SEE_XP("&fXP of player %player%: %xp% (level: %level%)"),
+    INVALID_TYPE("&c\"&e%input%&c\" is not a valid type."),
+    SELF_ADDED_HEAD("self added", "&aSuccessfully added %amount%X %type% heads to your inventory"),
+    SOMEONE_ADDED_HEAD_TO_YOU("someone added", "&a%player% just sent you %amount%X %type% heads"),
+    ADDED_HEAD_TO_SOMEONE("added to someone", "&aYou just added %amount%X %type% heads to %player%"),
     ;
 
     private final String path;
