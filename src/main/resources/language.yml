@@ -27,7 +27,7 @@ cannot place: '&cYou shouldn''t place that head on the floor, it is highly valua
 player not found: '&cPlayer with name %name% not found.'
 # Message sent when trying to add or set a player's XP but with an invalid amount.
 # %input%: the invalid number.
-error amount: '%input% is not a valid number'
+error amount: '&c%input% &eis not a valid number'
 # Message sent when sending "/loveExp xp add player amount"
 # %xp%: The amount of xp added.
 # %player%: the player who has been added xp to.

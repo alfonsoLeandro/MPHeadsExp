@@ -9,7 +9,12 @@ public enum Message implements MessageEnum {
     NO_PERMISSION("&cNo permission"),
     UNKNOWN_COMMAND("&cUnknown command. &fTry /%command% help"),
     RELOADED("&aPlugin reloaded!"),
-    PLAYER_NOT_FOUND("&cPlayer with name %name% not found.");
+    PLAYER_NOT_FOUND("&cPlayer with name %name% not found."),
+    ERROR_AMOUNT("&c%input% &eis not a valid number"),
+    ADDED_XP("&aSuccessfully added %xp% XP to %player% (total: %total%) (level: %level%)"),
+    SET_XP("&aSuccessfully set the XP of %player% to %xp% (level: %level%)"),
+    SEE_XP("&fXP of player %player%: %xp% (level: %level%)"),
+    ;
 
     private final String path;
     private final String dflt;

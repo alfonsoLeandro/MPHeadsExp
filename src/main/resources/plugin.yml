@@ -40,6 +40,6 @@ permissions:
     children:
       HeadsExp.version: true
       HeadsExp.reload: true
-      HeadsExp.add: true
-      HeadsExp.see: true
-      HeadsExp.set: true
+      HeadsExp.xp.add: true
+      HeadsExp.xp.see: true
+      HeadsExp.xp.set: true
