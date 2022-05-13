@@ -36,6 +36,12 @@ permissions:
   HeadsExp.giveHead:
     description: Allows you to give heads to other players.
     default: op
+  HeadsExp.heads.worth:
+    description: Allows you to check a certain head's price and xp value.
+    default: op
+  HeadsExp.heads.sell:
+    description: Allows you to sell a head.
+    default: op
   HeadsExp.*:
     description: Gives access to every permission available
     default: op
@@ -46,3 +52,11 @@ permissions:
       HeadsExp.xp.add: true
       HeadsExp.xp.see: true
       HeadsExp.xp.set: true
+      HeadsExp.heads.*: true
+  HeadsExp.heads.*:
+    description: Gives access to every user level permission
+    default: op
+    children:
+      HeadsExp.heads.worth: true
+      HeadsExp.heads.sell: true
+      HeadsExp.heads.info: true

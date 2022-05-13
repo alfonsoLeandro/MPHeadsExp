@@ -1,6 +1,11 @@
 package com.github.alfonsoleandro.mpheadsexp.commands;
 
 import com.github.alfonsoleandro.mpheadsexp.HeadsExp;
+import com.github.alfonsoleandro.mpheadsexp.commands.cor.AbstractHandler;
+import com.github.alfonsoleandro.mpheadsexp.commands.cor.headscommand.HeadsCommandHelpHandler;
+import com.github.alfonsoleandro.mpheadsexp.commands.cor.headscommand.HeadsCommandInfoHandler;
+import com.github.alfonsoleandro.mpheadsexp.commands.cor.headscommand.HeadsCommandSellHandler;
+import com.github.alfonsoleandro.mpheadsexp.commands.cor.headscommand.HeadsCommandWorthHandler;
 import com.github.alfonsoleandro.mpheadsexp.managers.LevelsManager;
 import com.github.alfonsoleandro.mpheadsexp.utils.Message;
 import com.github.alfonsoleandro.mputils.guis.SimpleGUI;
@@ -20,15 +25,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
 
-//TODO CHANGE HARDCODED MESSAGES FOR CONFIGURABLE ONES
+//TODO Move to command handlers only
 public class HeadsCommand extends Reloadable implements CommandExecutor {
 
     final private HeadsExp plugin;
     final private MessageSender<Message> messageSender;
+    private final AbstractHandler commandHandler;
     //Messages
     private String noPerm;
     private String unknown;
@@ -45,6 +52,13 @@ public class HeadsCommand extends Reloadable implements CommandExecutor {
         super(plugin);
         this.plugin = plugin;
         this.messageSender = plugin.getMessageSender();
+        this.commandHandler = new HeadsCommandHelpHandler(plugin,
+                new HeadsCommandWorthHandler(plugin,
+                        new HeadsCommandSellHandler(plugin,
+                                new HeadsCommandInfoHandler(plugin, null)
+                        )
+                )
+        );
         loadMessages();
     }
 
@@ -62,15 +76,9 @@ public class HeadsCommand extends Reloadable implements CommandExecutor {
 
 
     @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String[] args) {
+        this.commandHandler.handle(sender, label, args);
         if(args.length == 0 || args[0].equalsIgnoreCase("help")) {
-            messageSender.send(sender, "&6List of commands");
-            messageSender.send(sender, "&f/"+label+" help");
-            messageSender.send(sender, "&f/"+label+" worth");
-            messageSender.send(sender, "&f/"+label+" sell");
-            messageSender.send(sender, "&f/"+label+" info");
-
-
 
 
         }else if(args[0].equalsIgnoreCase("worth")) {

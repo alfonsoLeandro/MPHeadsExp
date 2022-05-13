@@ -4,6 +4,8 @@ reloaded: '&aPlugin reloaded!'
 # Message sent when an unrecognized command is sent.
 # %command%: the label used (either le or loveExp).
 unknown command: '&cUnknown command. &fTry /%command% help'
+# Message sent when running a player-only command from the console.
+cannot send console: '&cThat command can only be sent by a player'
 # Message sent when a player wants to know a certain head's worth.
 # %head%: The owner of the head.
 # %money%: The amount of money that head gives when sold.

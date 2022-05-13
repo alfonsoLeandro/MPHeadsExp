@@ -25,6 +25,9 @@ public class HeadsManager extends Reloadable {
 
     private final HeadsExp plugin;
     private Map<EntityType, ItemStack> heads;
+    /**
+     * A player name - head item Map
+     */
     private Map<String, ItemStack> playerHeads;
     private List<String> availableTypes;
 
