@@ -36,7 +36,9 @@ public class PlayerKillMobEvent implements Listener {
             Player killed = (Player) event.getEntity();
 
             //Get % of killed player's balance.
-            double percentage = config.contains("player heads."+killed.getName()) ? config.getDouble("player heads."+killed.getName()+".balance") : config.getDouble("player heads.default head.balance");
+            double percentage = config.contains("player heads."+killed.getName()) ?
+                    config.getDouble("player heads."+killed.getName()+".balance") :
+                    config.getDouble("player heads.default head.balance");
             double balance = plugin.getEconomy().getBalance(killed);
             double amount = balance * (Math.min(percentage, 100.0) / 100.0);
             plugin.getEconomy().withdrawPlayer(killed, amount);

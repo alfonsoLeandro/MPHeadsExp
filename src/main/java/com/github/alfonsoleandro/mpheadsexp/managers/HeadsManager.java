@@ -3,6 +3,7 @@ package com.github.alfonsoleandro.mpheadsexp.managers;
 import com.github.alfonsoleandro.mpheadsexp.HeadsExp;
 import com.github.alfonsoleandro.mpheadsexp.managers.utils.MobHeadData;
 import com.github.alfonsoleandro.mpheadsexp.managers.utils.PlayerHeadData;
+import com.github.alfonsoleandro.mpheadsexp.managers.utils.PlayerHeadDataValues;
 import com.github.alfonsoleandro.mputils.reloadable.Reloadable;
 import com.github.alfonsoleandro.mputils.string.StringUtils;
 import com.mojang.authlib.GameProfile;
@@ -11,7 +12,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -29,10 +29,10 @@ public class HeadsManager extends Reloadable {
 
     private final HeadsExp plugin;
     private final Settings settings;
-    //TODO
     private final Map<String, MobHeadData> mobHeads;
     private final Map<String, PlayerHeadData> playerHeads;
-    private List<String> availableTypes;
+    private final Map<String, PlayerHeadDataValues> playerHeadData;
+    private final List<String> availableTypes;
 
     public HeadsManager(HeadsExp plugin){
         super(plugin);
@@ -40,8 +40,11 @@ public class HeadsManager extends Reloadable {
         this.settings = plugin.getSettings();
         this.mobHeads = new HashMap<>();
         this.playerHeads = new HashMap<>();
+        this.playerHeadData = new HashMap<>();
+        this.availableTypes = new ArrayList<>();
         loadHeads();
         fillAvailableMobTypes();
+        fillPlayerHeadDataValues();
     }
 
 
@@ -88,18 +91,18 @@ public class HeadsManager extends Reloadable {
     }
 
     public ItemStack getPlayerHead(String playerName){
-        FileConfiguration config = this.plugin.getConfigYaml().getAccess();
-
-        if(this.playerHeads.containsKey(playerName)) return addPercentage(this.playerHeads.get(playerName).getHeadItem(),
-                playerName,
-                config.getDouble("player heads."+playerName+".balance"));
-
-        if(config.getBoolean("default head enabled")) {
-            return addPercentage(createPlayerHead(playerName,
-                            config.getDouble("player heads.default head.exp"),
-                            config.getDouble("player heads.default head.balance")),
+        if(this.playerHeads.containsKey(playerName))
+            return addPercentage(this.playerHeads.get(playerName).getHeadItem(),
                     playerName,
-                    config.getDouble("player heads.default head.balance"));
+                    this.playerHeadData.get(playerName).getMoneyPercentage()
+            );
+
+        if(this.settings.isDefaultPlayerHeadEnabled()) {
+            return addPercentage(createPlayerHead(playerName,
+                            this.settings.getDefaultPlayerHeadExp(),
+                            this.settings.getDefaultPlayerHeadBalance()),
+                    playerName,
+                    this.settings.getDefaultPlayerHeadBalance());
         }
         return null;
     }
@@ -158,9 +161,9 @@ public class HeadsManager extends Reloadable {
 
         skullMeta.setDisplayName(StringUtils.colorizeString('&',
                 this.settings.getPlayerHeadsName()
-                .replace("%player%", playerName)
-                .replace("%xp%", String.valueOf(xp))
-                .replace("%balance%", String.valueOf(price))));
+                        .replace("%player%", playerName)
+                        .replace("%xp%", String.valueOf(xp))
+                        .replace("%balance%", String.valueOf(price))));
 
         List<String> lore = new ArrayList<>();
         for(String line : this.settings.getPlayerHeadsLore()){
@@ -200,8 +203,21 @@ public class HeadsManager extends Reloadable {
 
 
     private void fillAvailableMobTypes(){
-        this.availableTypes = new ArrayList<>();
+        this.availableTypes.clear();
         this.mobHeads.values().forEach(mh -> this.availableTypes.add(mh.getMobType()));
+    }
+
+    private void fillPlayerHeadDataValues(){
+        this.playerHeadData.clear();
+        ConfigurationSection playerHeadsSection = this.plugin.getConfigYaml().getAccess().getConfigurationSection("player heads");
+        if(playerHeadsSection == null) return;
+        playerHeadsSection.getKeys(false).forEach(pn ->
+                this.playerHeadData.put(pn,
+                        new PlayerHeadDataValues(playerHeadsSection.getDouble(pn+".balance percentage"),
+                                playerHeadsSection.getDouble(pn+".exp")
+                        )
+                )
+        );
     }
 
 
@@ -214,6 +230,7 @@ public class HeadsManager extends Reloadable {
         this.playerHeads.clear();
         loadHeads();
         fillAvailableMobTypes();
+        fillPlayerHeadDataValues();
     }
 
 

@@ -184,7 +184,8 @@ public class HeadsCommand extends Reloadable implements CommandExecutor {
                 Economy economy = plugin.getEconomy();
                 LevelsManager manager = plugin.getLevelsManager();
 
-                int xp = config.getInt("player heads."+ (config.contains("player heads."+mobType) ? mobType : "default head") + ".exp");
+                int xp = config.getInt("player heads."+ (config.contains("player heads."+mobType) ?
+                        mobType : "default head") + ".exp");
                 int amount = inHand.getAmount();
                 price *= amount;
 

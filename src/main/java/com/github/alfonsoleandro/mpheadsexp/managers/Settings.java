@@ -10,9 +10,16 @@ import java.util.List;
 public class Settings extends Reloadable {
 
     private final HeadsExp plugin;
+
+    private boolean defaultPlayerHeadEnabled;
+
+    private double defaultPlayerHeadExp;
+    private double defaultPlayerHeadBalance;
+
     private String headsName;
-    private List<String> headsLore;
     private String playerHeadsName;
+
+    private List<String> headsLore;
     private List<String> playerHeadsLore;
 
     public Settings(HeadsExp plugin) {
@@ -22,16 +29,34 @@ public class Settings extends Reloadable {
 
     private void loadFields() {
         FileConfiguration config = this.plugin.getConfigYaml().getAccess();
-        //TODO
+
+        this.defaultPlayerHeadEnabled = config.getBoolean("default head enabled");
+
+        this.defaultPlayerHeadExp = config.getDouble("player heads.default head.exp");
+        this.defaultPlayerHeadBalance = config.getDouble("player heads.default head.balance");
+
         this.headsName = config.getString("heads name and lore.name");
-        this.headsLore = config.getStringList("heads name and lore.lore");
         this.playerHeadsName = config.getString("heads name and lore.player heads.name");
+
+        this.headsLore = config.getStringList("heads name and lore.lore");
         this.playerHeadsLore = config.getStringList("heads name and lore.player heads.lore");
 
     }
 
 
     //<editor-fold desc="Getters" default-state="collapsed">
+    public boolean isDefaultPlayerHeadEnabled() {
+        return this.defaultPlayerHeadEnabled;
+    }
+
+    public double getDefaultPlayerHeadExp() {
+        return this.defaultPlayerHeadExp;
+    }
+
+    public double getDefaultPlayerHeadBalance() {
+        return this.defaultPlayerHeadBalance;
+    }
+
     public String getHeadsName() {
         return this.headsName;
     }

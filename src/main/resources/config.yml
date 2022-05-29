@@ -170,11 +170,11 @@ player heads:
   # The default head, used for players that aren't specified in this list.
   default head:
     exp: 10
-    balance: 0.5
+    balance percentage: 0.5
   DarkHero_YT:
     exp: 100
     # This is a percentage (20%)
-    balance: 2.0
+    balance percentage: 2.0
 # The skins, required level, exp & money to give when sold for
 # each head and the level required for that head to drop.
 heads:
