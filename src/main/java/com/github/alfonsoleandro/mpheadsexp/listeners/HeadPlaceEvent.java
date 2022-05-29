@@ -1,4 +1,4 @@
-package com.github.alfonsoleandro.mpheadsexp.events;
+package com.github.alfonsoleandro.mpheadsexp.listeners;
 
 import com.github.alfonsoleandro.mpheadsexp.HeadsExp;
 import org.bukkit.Material;

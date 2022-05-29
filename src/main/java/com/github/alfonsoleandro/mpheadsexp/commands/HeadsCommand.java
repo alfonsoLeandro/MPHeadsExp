@@ -80,66 +80,6 @@ public class HeadsCommand extends Reloadable implements CommandExecutor {
         this.commandHandler.handle(sender, label, args);
         if(args.length == 0 || args[0].equalsIgnoreCase("help")) {
 
-
-        }else if(args[0].equalsIgnoreCase("worth")) {
-            if(sender instanceof ConsoleCommandSender) {
-                messageSender.send(sender, "&cThat command can only be sent by a player.");
-                return true;
-            }
-            if(notHasPerm(sender, "headsExp.sell")) return true;
-            Player player = (Player) sender;
-            ItemStack inHand = player.getInventory().getItemInMainHand();
-
-            if(!inHand.getType().equals(Material.PLAYER_HEAD) ||
-                    !inHand.hasItemMeta()) {
-                messageSender.send(sender, mstHoldHead);
-                return true;
-            }
-
-            FileConfiguration config = plugin.getConfig();
-            PersistentDataContainer data = inHand.getItemMeta().getPersistentDataContainer();
-            boolean isNotHead = true;
-            boolean isPlayerHead = false;
-            String mobType = "";
-            double price = 0;
-            int xp;
-
-            for (NamespacedKey key : data.getKeys()) {
-                if(data.has(key, PersistentDataType.STRING)) {
-                    String string = data.get(key, PersistentDataType.STRING);
-                    if(string.startsWith("HEAD") || string.startsWith("PLAYER-HEAD")) {
-                        isNotHead = false;
-                        if(string.startsWith("PLAYERHEAD")){
-                            isPlayerHead = true;
-                            price = Double.parseDouble(string.split(":")[2]);
-                        }
-                        mobType = string.split(":")[1];
-                        break;
-                    }
-                }
-            }
-
-            if(isNotHead) {
-                messageSender.send(sender, mstHoldHead);
-                return true;
-            }
-
-
-            if(isPlayerHead){
-                xp = config.getInt("player heads."+ (config.contains("player heads."+mobType) ? mobType : "default head") + ".exp");
-            }else {
-                price = config.getDouble("heads." + mobType + ".price");
-                xp = config.getInt("heads." + mobType + ".exp");
-            }
-
-            messageSender.send(sender, headWorth
-                    .replace("%head%", mobType)
-                    .replace("%money%", String.valueOf(price))
-                    .replace("%xp%", String.valueOf(xp)));
-
-
-
-
         }else if(args[0].equalsIgnoreCase("sell")) {
             if(sender instanceof ConsoleCommandSender) {
                 messageSender.send(sender, "&cThat command can only be sent by a player.");

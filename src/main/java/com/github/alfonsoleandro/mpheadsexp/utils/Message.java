@@ -21,6 +21,7 @@ public enum Message implements MessageEnum {
     CANNOT_SEND_CONSOLE("&cThat command can only be sent by a player"),
     MUST_BE_HOLDING_HEAD("&cYou must be holding a valid head in your hand."),
     HEAD_WORTH("&c%head%&f''s head worth is: &e%money%$ &fand &e%xp% &fexperience"),
+    PLAYER_HEAD_SOLD("&aSuccessfully sold %amount% heads of player %player% for %price%$ and %xp%XP (%totalxp% total xp)"),
     ;
 
     private final String path;

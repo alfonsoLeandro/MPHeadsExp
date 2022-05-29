@@ -2,9 +2,14 @@ package com.github.alfonsoleandro.mpheadsexp.commands.cor.headscommand;
 
 import com.github.alfonsoleandro.mpheadsexp.HeadsExp;
 import com.github.alfonsoleandro.mpheadsexp.commands.cor.AbstractHandler;
+import com.github.alfonsoleandro.mpheadsexp.events.PlayerHeadSellEvent;
+import com.github.alfonsoleandro.mpheadsexp.managers.HeadsManager;
 import com.github.alfonsoleandro.mpheadsexp.managers.LevelsManager;
+import com.github.alfonsoleandro.mpheadsexp.managers.Settings;
+import com.github.alfonsoleandro.mpheadsexp.managers.utils.PlayerHeadDataValues;
 import com.github.alfonsoleandro.mpheadsexp.utils.Message;
 import net.milkbowl.vault.economy.Economy;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.CommandSender;
@@ -15,11 +20,15 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Objects;
-//TODO
 public class HeadsCommandSellHandler extends AbstractHandler {
+
+    private final Settings settings;
+    private final HeadsManager headsManager;
 
     public HeadsCommandSellHandler(HeadsExp plugin, AbstractHandler successor) {
         super(plugin, successor);
+        this.settings = plugin.getSettings();
+        this.headsManager = plugin.getHeadsManager();
     }
 
     @Override
@@ -49,18 +58,19 @@ public class HeadsCommandSellHandler extends AbstractHandler {
 
         boolean isNotHead = true;
         boolean isPlayerHead = false;
-        String mobType = "";
         double price = 0;
+        double xp;
+        String mobType = "";
 
         for (NamespacedKey key : data.getKeys()) {
             if(data.has(key, PersistentDataType.STRING)) {
                 String string = data.get(key, PersistentDataType.STRING);
                 assert string != null;
-                if(string.startsWith("HEAD") || string.startsWith("PLAYERHEAD")) {
+                if(string.startsWith("HEAD") || string.startsWith("PLAYER-HEAD")) {
                     isNotHead = false;
-                    if(string.startsWith("PLAYERHEAD")){
+                    if(string.startsWith("PLAYER-HEAD")){
                         isPlayerHead = true;
-                        price = Double.parseDouble(string.split(":")[2]);
+                        price = Double.parseDouble(string.split(":")[2]); //"PLAYER-HEAD:%player_name%:%price%"
                     }
                     mobType = string.split(":")[1];
                     break;
@@ -73,36 +83,48 @@ public class HeadsCommandSellHandler extends AbstractHandler {
             return;
         }
 
-//        if(isPlayerHead){
-//            FileConfiguration config = plugin.getConfigYaml().getAccess();
-//            Economy economy = plugin.getEconomy();
-//            LevelsManager manager = plugin.getLevelsManager();
-//
-//            int xp = config.getInt("player heads."+ (config.contains("player heads."+mobType) ? mobType : "default head") + ".exp");
-//            int amount = inHand.getAmount();
-//            price *= amount;
-//
-//            inHand.setAmount(0);
-//
-//            economy.depositPlayer(player, price);
-//            manager.addXP(player.getUniqueId(), xp);
-//
-//            messageSender.send(player, playerHeadSold
-//                    .replace("%amount%", String.valueOf(amount))
-//                    .replace("%player%", mobType)
-//                    .replace("%price%", String.valueOf(price))
-//                    .replace("%xp%", String.valueOf(xp))
-//                    .replace("%totalxp%", String.valueOf(manager.getXP(player.getUniqueId())))
-//            );
-//
-//
-//            FileConfiguration records = plugin.getRecordsYaml().getAccess();
-//            records.set("records."+player.getName()+".players."+mobType, records.getInt("records."+player.getName()+"."+mobType)+amount);
-//            plugin.getRecordsYaml().save();
-//
-//            return;
-//        }
-//
+
+        if(isPlayerHead){
+            PlayerHeadDataValues playerHeadDataValues = this.headsManager.getPlayerHeadDataValues(mobType);
+            xp = playerHeadDataValues == null ? this.settings.getDefaultPlayerHeadExp() : playerHeadDataValues.getXp();
+        }else {
+            price = this.headsManager.getMobHeadData(mobType).getPrice();
+            xp = this.headsManager.getMobHeadData(mobType).getXp();
+        }
+
+        if(isPlayerHead){
+            Economy economy = this.plugin.getEconomy();
+            LevelsManager manager = this.plugin.getLevelsManager();
+
+            int amount = inHand.getAmount();
+            price *= amount;
+
+            //TRIGGER EVENT
+            PlayerHeadSellEvent event = new PlayerHeadSellEvent(player, mobType, (int) xp, price, amount);
+            Bukkit.getPluginManager().callEvent(event);
+            if(event.isCancelled()) return;
+
+            inHand.setAmount(0);
+            economy.depositPlayer(player, event.getPrice());
+            manager.addXP(player.getUniqueId(), event.getXp());
+
+            this.messageSender.send(player, Message.PLAYER_HEAD_SOLD,
+                    "%amount%", String.valueOf(amount),
+                    "%player%", mobType,
+                    "%price%", String.valueOf(event.getPrice()),
+                    "%xp%", String.valueOf(event.getXp()),
+                    "%totalxp%", String.valueOf(manager.getXP(player.getUniqueId()))
+            );
+
+
+            FileConfiguration records = this.plugin.getRecordsYaml().getAccess();
+            records.set("records."+player.getName()+".players."+mobType,
+                    records.getInt("records."+player.getName()+"."+mobType)+amount);
+            this.plugin.getRecordsYaml().save(true);
+
+            return;
+        }
+
 //
 //        FileConfiguration config = plugin.getConfigYaml().getAccess();
 //        Economy economy = plugin.getEconomy();
