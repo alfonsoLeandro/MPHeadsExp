@@ -1,6 +1,8 @@
 package com.github.alfonsoleandro.mpheadsexp.managers;
 
 import com.github.alfonsoleandro.mpheadsexp.HeadsExp;
+import com.github.alfonsoleandro.mpheadsexp.managers.utils.MobHeadData;
+import com.github.alfonsoleandro.mpheadsexp.managers.utils.PlayerHeadData;
 import com.github.alfonsoleandro.mputils.reloadable.Reloadable;
 import com.github.alfonsoleandro.mputils.string.StringUtils;
 import com.mojang.authlib.GameProfile;
@@ -21,9 +23,16 @@ import org.bukkit.persistence.PersistentDataType;
 import java.lang.reflect.Field;
 import java.util.*;
 
+/**
+ * Stores all available heads. Manage Heads' prices and xp values.
+ */
 public class HeadsManager extends Reloadable {
 
     private final HeadsExp plugin;
+    //TODO
+    private Map<String, MobHeadData> mobHeads;
+    private Map<String, PlayerHeadData> pHeads;
+
     private Map<EntityType, ItemStack> heads;
     /**
      * A player name - head item Map
@@ -187,6 +196,7 @@ public class HeadsManager extends Reloadable {
     }
 
 
+    //TODO REMOVE
     private void fillAvailableMobTypes(){
         availableTypes = new ArrayList<>();
         heads.keySet().forEach(type -> availableTypes.add(type.toString()));
@@ -194,7 +204,7 @@ public class HeadsManager extends Reloadable {
 
     public void reload(boolean deep){
         this.preLoadHeads();
-        this.fillAvailableMobTypes();
+        this.fillAvailableMobTypes(); //TODO REMOVE
     }
 
 
