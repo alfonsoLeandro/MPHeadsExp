@@ -85,8 +85,8 @@ public class HeadsManager extends Reloadable {
 
     }
 
-    public ItemStack getMobHead(String entityType){
-        if(this.mobHeads.containsKey(entityType)) return this.mobHeads.get(entityType).getHeadItem();
+    public MobHeadData getMobHeadData(String entityType){
+        if(this.mobHeads.containsKey(entityType)) return this.mobHeads.get(entityType);
         return null;
     }
 
@@ -223,6 +223,10 @@ public class HeadsManager extends Reloadable {
 
     public List<String> getAvailableTypes(){
         return this.availableTypes;
+    }
+
+    public PlayerHeadDataValues getPlayerHeadDataValues(String playerName){
+        return this.playerHeadData.get(playerName);
     }
 
     public void reload(boolean deep){

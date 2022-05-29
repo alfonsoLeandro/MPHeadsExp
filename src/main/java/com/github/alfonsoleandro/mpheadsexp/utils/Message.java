@@ -20,6 +20,7 @@ public enum Message implements MessageEnum {
     ADDED_HEAD_TO_SOMEONE("added to someone", "&aYou just added %amount%X %type% heads to %player%"),
     CANNOT_SEND_CONSOLE("&cThat command can only be sent by a player"),
     MUST_BE_HOLDING_HEAD("&cYou must be holding a valid head in your hand."),
+    HEAD_WORTH("&c%head%&f''s head worth is: &e%money%$ &fand &e%xp% &fexperience"),
     ;
 
     private final String path;

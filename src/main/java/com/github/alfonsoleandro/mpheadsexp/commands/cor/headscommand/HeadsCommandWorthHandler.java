@@ -2,6 +2,9 @@ package com.github.alfonsoleandro.mpheadsexp.commands.cor.headscommand;
 
 import com.github.alfonsoleandro.mpheadsexp.HeadsExp;
 import com.github.alfonsoleandro.mpheadsexp.commands.cor.AbstractHandler;
+import com.github.alfonsoleandro.mpheadsexp.managers.HeadsManager;
+import com.github.alfonsoleandro.mpheadsexp.managers.Settings;
+import com.github.alfonsoleandro.mpheadsexp.managers.utils.PlayerHeadDataValues;
 import com.github.alfonsoleandro.mpheadsexp.utils.Message;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -15,8 +18,13 @@ import java.util.Objects;
 
 public class HeadsCommandWorthHandler extends AbstractHandler {
 
+    private final Settings settings;
+    private final HeadsManager headsManager;
+
     public HeadsCommandWorthHandler(HeadsExp plugin, AbstractHandler successor) {
         super(plugin, successor);
+        this.headsManager = plugin.getHeadsManager();
+        this.settings = plugin.getSettings();
     }
 
     @Override
@@ -47,19 +55,19 @@ public class HeadsCommandWorthHandler extends AbstractHandler {
 
         boolean isNotHead = true;
         boolean isPlayerHead = false;
-        String mobType = "";
         double price = 0;
-        int xp;
+        double xp;
+        String mobType = "";
 
         for (NamespacedKey key : data.getKeys()) {
             if(data.has(key, PersistentDataType.STRING)) {
                 String string = data.get(key, PersistentDataType.STRING);
                 assert string != null;
-                if(string.startsWith("HEAD") || string.startsWith("PLAYERHEAD")) {
+                if(string.startsWith("HEAD") || string.startsWith("PLAYER-HEAD")) {
                     isNotHead = false;
-                    if(string.startsWith("PLAYERHEAD")){
+                    if(string.startsWith("PLAYER-HEAD")){
                         isPlayerHead = true;
-                        price = Double.parseDouble(string.split(":")[2]);
+                        price = Double.parseDouble(string.split(":")[2]); //"PLAYER-HEAD:%player_name%:%price%"
                     }
                     mobType = string.split(":")[1];
                     break;
@@ -73,19 +81,20 @@ public class HeadsCommandWorthHandler extends AbstractHandler {
         }
 
 
-//        if(isPlayerHead){
-//            xp = config.getInt("player heads."+ (config.contains("player heads."+mobType) ? mobType : "default head") + ".exp");
-//        }else {
-//            price = config.getDouble("heads." + mobType + ".price");
-//            xp = config.getInt("heads." + mobType + ".exp");
-//        }
-//
-//        messageSender.send(sender, headWorth
-//                .replace("%head%", mobType)
-//                .replace("%money%", String.valueOf(price))
-//                .replace("%xp%", String.valueOf(xp)));
-//
-//
+        if(isPlayerHead){
+            PlayerHeadDataValues playerHeadDataValues = this.headsManager.getPlayerHeadDataValues(mobType);
+            xp = playerHeadDataValues == null ? this.settings.getDefaultPlayerHeadExp() : playerHeadDataValues.getXp();
+        }else {
+            price = this.headsManager.getMobHeadData(mobType).getPrice();
+            xp = this.headsManager.getMobHeadData(mobType).getXp();
+        }
+
+        this.messageSender.send(sender, Message.HEAD_WORTH,
+                "%head%", mobType,
+                "%money%", String.valueOf(price),
+                "%xp%", String.valueOf(xp));
+
+
 
 
     }
