@@ -9,6 +9,7 @@ import com.github.alfonsoleandro.mpheadsexp.events.InfoGUIClickEvent;
 import com.github.alfonsoleandro.mpheadsexp.events.PlayerKillMobEvent;
 import com.github.alfonsoleandro.mpheadsexp.managers.HeadsManager;
 import com.github.alfonsoleandro.mpheadsexp.managers.LevelsManager;
+import com.github.alfonsoleandro.mpheadsexp.managers.Settings;
 import com.github.alfonsoleandro.mpheadsexp.utils.*;
 import com.github.alfonsoleandro.mputils.files.YamlFile;
 import com.github.alfonsoleandro.mputils.managers.MessageSender;
@@ -28,6 +29,7 @@ public final class HeadsExp extends ReloaderPlugin {
     private MessageSender<Message> messageSender;
     private LevelsManager levelsManager;
     private HeadsManager headsManager;
+    private Settings settings;
     //Hooks
     private Economy economy;
     private PAPIPlaceholder papiExpansion;
@@ -43,7 +45,8 @@ public final class HeadsExp extends ReloaderPlugin {
      */
     @Override
     public void onEnable() {
-        reloadFiles();
+        registerFiles();
+        this.settings = new Settings(this);
         this.messageSender = new MessageSender<>(this, Message.values(), this.languageYaml, "prefix");
         this.messageSender.send("&aEnabled&f. Version: &e" + this.version);
         this.messageSender.send("&fThank you for using my plugin! &" + this.color + getDescription().getName() + "&f By " + getDescription().getAuthors().get(0));
@@ -97,13 +100,23 @@ public final class HeadsExp extends ReloaderPlugin {
 
 
     /**
-     * Registers and reloads plugin files.
+     * Registers plugin files.
      */
-    public void reloadFiles() {
+    public void registerFiles() {
         this.configYaml = new YamlFile(this, "config.yml");
         this.languageYaml = new YamlFile(this, "language.yml");
         this.playersYaml = new YamlFile(this, "players.yml");
         this.recordsYaml = new YamlFile(this, "selling records.yml");
+    }
+
+    /**
+     * Reloads plugin files.
+     */
+    public void reloadFiles() {
+        this.configYaml.loadFileConfiguration();
+        this.languageYaml.loadFileConfiguration();
+        this.playersYaml.loadFileConfiguration();
+        this.recordsYaml.loadFileConfiguration();
     }
 
 
@@ -128,7 +141,7 @@ public final class HeadsExp extends ReloaderPlugin {
         if(mainCommand == null || headsCommand == null){
             this.messageSender.send("&cCommands were not registered properly.");
             this.messageSender.send("&cPlease check your plugin.yml is valid. Disabling LoveExp.");
-            this.setEnabled(false);
+            setEnabled(false);
             return;
         }
 
@@ -140,6 +153,7 @@ public final class HeadsExp extends ReloaderPlugin {
 
     public void reload(boolean deep){
         reloadFiles();
+        this.settings.reload(deep); //Settings need to be reloaded before HeadsManager, maybe assign priorities to reloadables?
         super.reload(deep);
     }
 
@@ -171,6 +185,9 @@ public final class HeadsExp extends ReloaderPlugin {
         return this.headsManager;
     }
 
+    public Settings getSettings() {
+        return this.settings;
+    }
 
     public Economy getEconomy(){
         return this.economy;

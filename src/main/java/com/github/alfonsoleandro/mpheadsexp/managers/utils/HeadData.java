@@ -1,5 +1,6 @@
 package com.github.alfonsoleandro.mpheadsexp.managers.utils;
 
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 public abstract class HeadData {
@@ -37,6 +38,9 @@ public abstract class HeadData {
         return this.headItem;
     }
 
+    public void setHeadItem() {
+        this.headItem = new ItemStack(Material.PLAYER_HEAD);
+    }
 
     public void load(){
         //todo

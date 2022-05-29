@@ -16,14 +16,14 @@ public class SoundSettings {
 
 
     public Sound getSound() {
-        return sound;
+        return this.sound;
     }
 
     public float getVolume() {
-        return volume;
+        return this.volume;
     }
 
     public float getPitch() {
-        return pitch;
+        return this.pitch;
     }
 }

@@ -39,7 +39,7 @@ public class LevelsManager extends Reloadable {
         super(plugin);
         this.plugin = plugin;
         loadLevelsFromFile();
-        reload();
+        reload(false);
     }
 
 

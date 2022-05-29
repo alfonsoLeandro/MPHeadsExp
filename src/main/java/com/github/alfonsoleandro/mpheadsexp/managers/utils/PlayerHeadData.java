@@ -4,8 +4,14 @@ import org.bukkit.inventory.ItemStack;
 
 public class PlayerHeadData extends HeadData{
 
-    public PlayerHeadData(double price, double xp, ItemStack headItem) {
+    private final String playerName;
+
+    public PlayerHeadData(double price, double xp, String playerName, ItemStack headItem) {
         super(price, xp, headItem);
+        this.playerName = playerName;
     }
 
+    public String getPlayerName() {
+        return this.playerName;
+    }
 }

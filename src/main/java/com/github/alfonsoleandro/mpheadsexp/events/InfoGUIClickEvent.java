@@ -11,7 +11,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -106,7 +105,7 @@ public class InfoGUIClickEvent implements Listener {
             if(showBarrier && level < config.getInt("heads."+type+".required level")){
                 item = new ItemStack(Material.BARRIER);
             }else {
-                item = plugin.getHeadsManager().getMobHead(EntityType.valueOf(type)).clone();
+                item = this.plugin.getHeadsManager().getMobHead(type).clone();
             }
 
             ItemMeta meta = item.getItemMeta();
@@ -186,9 +185,9 @@ public class InfoGUIClickEvent implements Listener {
             for (String type : register.keySet()) {
                 ItemStack head;
                 try{
-                    head = plugin.getHeadsManager().getMobHead(EntityType.valueOf(type)).clone();
+                    head = this.plugin.getHeadsManager().getMobHead(type).clone();
                 }catch (Exception e){
-                    head = plugin.getHeadsManager().getPlayerHead(type).clone();
+                    head = this.plugin.getHeadsManager().getPlayerHead(type).clone();
                 }
                 ItemMeta meta = head.getItemMeta();
                 assert meta != null;

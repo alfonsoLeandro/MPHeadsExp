@@ -52,7 +52,7 @@ public class PlayerKillMobEvent implements Listener {
                             .replace("%amount%", String.valueOf(amount)));
 
         }else {
-            head = plugin.getHeadsManager().getMobHead(event.getEntityType());
+            head = plugin.getHeadsManager().getMobHead(event.getEntityType().toString());
             if(head == null) return;
             //TODO leave hardcoded probability?
             if(3 > r.nextInt(10)) return;

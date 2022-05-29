@@ -107,7 +107,7 @@ public class HeadsCommand extends Reloadable implements CommandExecutor {
             for (NamespacedKey key : data.getKeys()) {
                 if(data.has(key, PersistentDataType.STRING)) {
                     String string = data.get(key, PersistentDataType.STRING);
-                    if(string.startsWith("HEAD") || string.startsWith("PLAYERHEAD")) {
+                    if(string.startsWith("HEAD") || string.startsWith("PLAYER-HEAD")) {
                         isNotHead = false;
                         if(string.startsWith("PLAYERHEAD")){
                             isPlayerHead = true;

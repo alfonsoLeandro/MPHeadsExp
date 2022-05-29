@@ -12,7 +12,6 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -29,82 +28,78 @@ import java.util.*;
 public class HeadsManager extends Reloadable {
 
     private final HeadsExp plugin;
+    private final Settings settings;
     //TODO
-    private Map<String, MobHeadData> mobHeads;
-    private Map<String, PlayerHeadData> pHeads;
-
-    private Map<EntityType, ItemStack> heads;
-    /**
-     * A player name - head item Map
-     */
-    private Map<String, ItemStack> playerHeads;
+    private final Map<String, MobHeadData> mobHeads;
+    private final Map<String, PlayerHeadData> playerHeads;
     private List<String> availableTypes;
 
     public HeadsManager(HeadsExp plugin){
         super(plugin);
         this.plugin = plugin;
-        preLoadHeads();
+        this.settings = plugin.getSettings();
+        this.mobHeads = new HashMap<>();
+        this.playerHeads = new HashMap<>();
+        loadHeads();
         fillAvailableMobTypes();
     }
 
-    public List<String> getAvailableTypes(){
-        return this.availableTypes;
-    }
 
-
-    public void preLoadHeads(){
-        heads = new HashMap<>();
-        playerHeads = new HashMap<>();
-
+    public void loadHeads(){
         //Mob heads
-        ConfigurationSection mobHeads = plugin.getConfigYaml().getAccess().getConfigurationSection("heads");
-        if(mobHeads == null) return;
-
-        for(String mobType : mobHeads.getKeys(false)){
-            heads.put(EntityType.valueOf(mobType), createSkull(mobHeads.getString(mobType+".url"),
-                    mobType,
-                    mobHeads.getInt(mobType+".exp"),
-                    mobHeads.getInt(mobType+".price")));
+        ConfigurationSection mobHeads = this.plugin.getConfigYaml().getAccess().getConfigurationSection("heads");
+        if(mobHeads != null) {
+            for (String mobType : mobHeads.getKeys(false)) {
+                this.mobHeads.put(mobType, new MobHeadData(mobHeads.getDouble(mobType + ".price"),
+                                mobHeads.getInt(mobType + ".exp"),
+                                mobType,
+                                createSkull(mobHeads.getString(mobType + ".url"),
+                                        mobType,
+                                        mobHeads.getInt(mobType + ".exp"),
+                                        mobHeads.getInt(mobType + ".price")
+                                )
+                        )
+                );
+            }
         }
 
         //Player heads
-        ConfigurationSection playerHeads = plugin.getConfigYaml().getAccess().getConfigurationSection("player heads");
-        if(playerHeads == null) return;
-
-        for(String playerName : playerHeads.getKeys(false)){
-            this.playerHeads.put(playerName, createPlayerHead(playerName,
-                    playerHeads.getDouble(playerName+".exp"),
-                    playerHeads.getDouble(playerName+".balance")));
+        ConfigurationSection playerHeads = this.plugin.getConfigYaml().getAccess().getConfigurationSection("player heads");
+        if(playerHeads != null) {
+            for (String playerName : playerHeads.getKeys(false)) {
+                this.playerHeads.put(playerName, new PlayerHeadData(
+                                playerHeads.getDouble(playerName + ".balance"),
+                                playerHeads.getDouble(playerName + ".exp"),
+                                playerName,
+                                createPlayerHead(
+                                        playerName,
+                                        playerHeads.getDouble(playerName + ".exp"),
+                                        playerHeads.getDouble(playerName + ".balance"))
+                        )
+                );
+            }
         }
 
     }
 
-    public ItemStack getMobHead(EntityType entityType){
-        if(heads.containsKey(entityType)) return heads.get(entityType).clone();
-
-        FileConfiguration config = plugin.getConfigYaml().getAccess();
-        if(config.contains("heads."+entityType.toString())) {
-            return createSkull(config.getString("heads." + entityType.toString() + ".url"),
-                    entityType.toString(),
-                    config.getInt("heads." + entityType.toString() + ".exp"),
-                    config.getInt("heads." + entityType.toString() + ".price"));
-        }
+    public ItemStack getMobHead(String entityType){
+        if(this.mobHeads.containsKey(entityType)) return this.mobHeads.get(entityType).getHeadItem();
         return null;
     }
 
     public ItemStack getPlayerHead(String playerName){
-        FileConfiguration config = plugin.getConfigYaml().getAccess();
+        FileConfiguration config = this.plugin.getConfigYaml().getAccess();
 
-        if(playerHeads.containsKey(playerName)) return addPercentage(playerHeads.get(playerName),
+        if(this.playerHeads.containsKey(playerName)) return addPercentage(this.playerHeads.get(playerName).getHeadItem(),
                 playerName,
                 config.getDouble("player heads."+playerName+".balance"));
 
         if(config.getBoolean("default head enabled")) {
             return addPercentage(createPlayerHead(playerName,
-                    config.getDouble("player heads.default head.exp"),
-                    config.getDouble("player heads.default head.balance")),
-                        playerName,
-                        config.getDouble("player heads.default head.balance"));
+                            config.getDouble("player heads.default head.exp"),
+                            config.getDouble("player heads.default head.balance")),
+                    playerName,
+                    config.getDouble("player heads.default head.balance"));
         }
         return null;
     }
@@ -115,6 +110,7 @@ public class HeadsManager extends Reloadable {
         ItemStack head = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta skullMeta = (SkullMeta) head.getItemMeta();
 
+        //SET SKIN
         GameProfile profile = new GameProfile(UUID.fromString("8561b610-ad5c-390d-ac31-1a1d8ca69fd7"), null);
         byte[] encodedData = Base64.getEncoder().encode(String.format("{textures:{SKIN:{url:\"%s\"}}}", skullUrl).getBytes());
         profile.getProperties().put("textures", new Property("textures", new String(encodedData)));
@@ -127,14 +123,18 @@ public class HeadsManager extends Reloadable {
         } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e1) {
             e1.printStackTrace();
         }
-        FileConfiguration config = plugin.getConfigYaml().getAccess();
-        skullMeta.setDisplayName(StringUtils.colorizeString('&', config.getString("heads name and lore.name")
-                .replace("%type%", mobType)
-                .replace("%xp%", String.valueOf(xp))
-                .replace("%money%", String.valueOf(price))));
 
+        //SET NAME
+        skullMeta.setDisplayName(StringUtils.colorizeString('&',
+                this.settings.getHeadsName()
+                        .replace("%type%", mobType)
+                        .replace("%xp%", String.valueOf(xp))
+                        .replace("%money%", String.valueOf(price)))
+        );
+
+        //SET LORE
         List<String> lore = new ArrayList<>();
-        for(String line : config.getStringList("heads name and lore.lore")){
+        for(String line : this.settings.getHeadsLore()){
             lore.add(StringUtils.colorizeString('&', line
                     .replace("%type%", mobType)
                     .replace("%xp%", String.valueOf(xp))
@@ -142,12 +142,12 @@ public class HeadsManager extends Reloadable {
         }
         skullMeta.setLore(lore);
 
-        skullMeta.getPersistentDataContainer().set(new NamespacedKey(plugin, "MPHeads"), PersistentDataType.STRING, "HEAD:"+mobType);
+        skullMeta.getPersistentDataContainer().set(new NamespacedKey(this.plugin, "MPHeads"),
+                PersistentDataType.STRING, "HEAD:"+mobType);
 
         head.setItemMeta(skullMeta);
 
         return head;
-
     }
 
     private ItemStack createPlayerHead(String playerName, double xp, double price){
@@ -156,14 +156,14 @@ public class HeadsManager extends Reloadable {
         assert skullMeta != null;
         skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(playerName));
 
-        FileConfiguration config = plugin.getConfigYaml().getAccess();
-        skullMeta.setDisplayName(StringUtils.colorizeString('&', config.getString("heads name and lore.player heads.name")
+        skullMeta.setDisplayName(StringUtils.colorizeString('&',
+                this.settings.getPlayerHeadsName()
                 .replace("%player%", playerName)
                 .replace("%xp%", String.valueOf(xp))
                 .replace("%balance%", String.valueOf(price))));
 
         List<String> lore = new ArrayList<>();
-        for(String line : config.getStringList("heads name and lore.player heads.lore")){
+        for(String line : this.settings.getPlayerHeadsLore()){
             lore.add(StringUtils.colorizeString('&', line
                     .replace("%player%", playerName)
                     .replace("%xp%", String.valueOf(xp))
@@ -182,13 +182,16 @@ public class HeadsManager extends Reloadable {
         if(skull == null || !skull.hasItemMeta()) return null;
         skull = skull.clone();
         ItemMeta meta = skull.getItemMeta();
+        assert meta != null;
         PersistentDataContainer data = meta.getPersistentDataContainer();
         Player player = Bukkit.getPlayer(playerName);
+
         if(player == null) return skull;
-        double balance = plugin.getEconomy().getBalance(player);
+        double balance = this.plugin.getEconomy().getBalance(player);
         double amount = balance * (Math.min(percentage, 100.0) / 100.0);
 
-        data.set(new NamespacedKey(plugin, "MPHeads"), PersistentDataType.STRING, "PLAYERHEAD:"+playerName+":"+amount);
+        data.set(new NamespacedKey(this.plugin, "MPHeads"),
+                PersistentDataType.STRING, "PLAYER-HEAD:"+playerName+":"+amount);
 
         skull.setItemMeta(meta);
 
@@ -196,15 +199,21 @@ public class HeadsManager extends Reloadable {
     }
 
 
-    //TODO REMOVE
     private void fillAvailableMobTypes(){
-        availableTypes = new ArrayList<>();
-        heads.keySet().forEach(type -> availableTypes.add(type.toString()));
+        this.availableTypes = new ArrayList<>();
+        this.mobHeads.values().forEach(mh -> this.availableTypes.add(mh.getMobType()));
+    }
+
+
+    public List<String> getAvailableTypes(){
+        return this.availableTypes;
     }
 
     public void reload(boolean deep){
-        this.preLoadHeads();
-        this.fillAvailableMobTypes(); //TODO REMOVE
+        this.mobHeads.clear();
+        this.playerHeads.clear();
+        loadHeads();
+        fillAvailableMobTypes();
     }
 
 

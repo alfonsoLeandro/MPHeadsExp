@@ -56,7 +56,7 @@ public class MainCommandGiveHeadHandler extends AbstractHandler {
                     "%input%", headType);
             return;
         }
-        ItemStack item = this.plugin.getHeadsManager().getMobHead(EntityType.valueOf(headType));
+        ItemStack item = this.plugin.getHeadsManager().getMobHead(headType);
         item.setAmount(amount);
         toGive.getInventory().addItem(item);
 
