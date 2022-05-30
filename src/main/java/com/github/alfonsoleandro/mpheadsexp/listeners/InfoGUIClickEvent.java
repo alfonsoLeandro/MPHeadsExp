@@ -105,7 +105,7 @@ public class InfoGUIClickEvent implements Listener {
             if(showBarrier && level < config.getInt("heads."+type+".required level")){
                 item = new ItemStack(Material.BARRIER);
             }else {
-                item = this.plugin.getHeadsManager().getMobHead(type).clone();
+                item = this.plugin.getHeadsManager().getMobHeadData(type).getHeadItem().clone();
             }
 
             ItemMeta meta = item.getItemMeta();
@@ -185,7 +185,7 @@ public class InfoGUIClickEvent implements Listener {
             for (String type : register.keySet()) {
                 ItemStack head;
                 try{
-                    head = this.plugin.getHeadsManager().getMobHead(type).clone();
+                    head = this.plugin.getHeadsManager().getMobHeadData(type).getHeadItem().clone();
                 }catch (Exception e){
                     head = this.plugin.getHeadsManager().getPlayerHead(type).clone();
                 }

@@ -6,19 +6,19 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-public class PlayerHeadSellEvent extends Event implements Cancellable {
+public class MobHeadSellEvent extends Event implements Cancellable {
 
     private static final HandlerList HANDLERS = new HandlerList();
     private final Player seller;
-    private final String playerName;
+    private final String mobType;
     private final int amount;
     private int xp;
     private double price;
     private boolean cancelled = false;
 
-    public PlayerHeadSellEvent(Player seller, String playerName, int xp, double price, int amount) {
+    public MobHeadSellEvent(Player seller, String mobType, int xp, double price, int amount) {
         this.seller = seller;
-        this.playerName = playerName;
+        this.mobType = mobType;
         this.xp = xp;
         this.price = price;
         this.amount = amount;
@@ -36,8 +36,8 @@ public class PlayerHeadSellEvent extends Event implements Cancellable {
         return this.seller;
     }
 
-    public String getPlayerName() {
-        return this.playerName;
+    public String getMobType() {
+        return this.mobType;
     }
 
     public int getXp() {

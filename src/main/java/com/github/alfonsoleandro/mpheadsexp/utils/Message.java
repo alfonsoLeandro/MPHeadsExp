@@ -22,6 +22,7 @@ public enum Message implements MessageEnum {
     MUST_BE_HOLDING_HEAD("&cYou must be holding a valid head in your hand."),
     HEAD_WORTH("&c%head%&f''s head worth is: &e%money%$ &fand &e%xp% &fexperience"),
     PLAYER_HEAD_SOLD("&aSuccessfully sold %amount% heads of player %player% for %price%$ and %xp%XP (%totalxp% total xp)"),
+    HEAD_SOLD("&aSuccessfully sold %amount% %type% heads for %price%$ and %xp%XP (%totalxp% total xp)"),
     ;
 
     private final String path;

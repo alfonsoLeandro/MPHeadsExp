@@ -2,6 +2,7 @@ package com.github.alfonsoleandro.mpheadsexp.commands.cor.headscommand;
 
 import com.github.alfonsoleandro.mpheadsexp.HeadsExp;
 import com.github.alfonsoleandro.mpheadsexp.commands.cor.AbstractHandler;
+import com.github.alfonsoleandro.mpheadsexp.events.MobHeadSellEvent;
 import com.github.alfonsoleandro.mpheadsexp.events.PlayerHeadSellEvent;
 import com.github.alfonsoleandro.mpheadsexp.managers.HeadsManager;
 import com.github.alfonsoleandro.mpheadsexp.managers.LevelsManager;
@@ -84,20 +85,17 @@ public class HeadsCommandSellHandler extends AbstractHandler {
         }
 
 
-        if(isPlayerHead){
-            PlayerHeadDataValues playerHeadDataValues = this.headsManager.getPlayerHeadDataValues(mobType);
-            xp = playerHeadDataValues == null ? this.settings.getDefaultPlayerHeadExp() : playerHeadDataValues.getXp();
-        }else {
-            price = this.headsManager.getMobHeadData(mobType).getPrice();
-            xp = this.headsManager.getMobHeadData(mobType).getXp();
-        }
 
         if(isPlayerHead){
+            PlayerHeadDataValues playerHeadDataValues = this.headsManager.getPlayerHeadDataValues(mobType);
             Economy economy = this.plugin.getEconomy();
             LevelsManager manager = this.plugin.getLevelsManager();
+            xp = playerHeadDataValues == null ? this.settings.getDefaultPlayerHeadExp() : playerHeadDataValues.getXp();
+
 
             int amount = inHand.getAmount();
             price *= amount;
+            xp *= amount;
 
             //TRIGGER EVENT
             PlayerHeadSellEvent event = new PlayerHeadSellEvent(player, mobType, (int) xp, price, amount);
@@ -122,36 +120,41 @@ public class HeadsCommandSellHandler extends AbstractHandler {
                     records.getInt("records."+player.getName()+"."+mobType)+amount);
             this.plugin.getRecordsYaml().save(true);
 
-            return;
+        }else {
+            Economy economy = this.plugin.getEconomy();
+            LevelsManager manager = this.plugin.getLevelsManager();
+            price = this.headsManager.getMobHeadData(mobType).getPrice();
+            xp = this.headsManager.getMobHeadData(mobType).getXp();
+
+            int amount = inHand.getAmount();
+            price *= amount;
+            xp *= amount;
+
+            //TRIGGER EVENT
+            MobHeadSellEvent event = new MobHeadSellEvent(player, mobType, (int) xp, price, amount);
+            Bukkit.getPluginManager().callEvent(event);
+            if(event.isCancelled()) return;
+
+            inHand.setAmount(0);
+
+            economy.depositPlayer(player, event.getPrice());
+            manager.addXP(player.getUniqueId(), event.getXp());
+
+            this.messageSender.send(player, Message.HEAD_SOLD,
+                    "%amount%", String.valueOf(amount),
+                    "%type%", mobType,
+                    "%price%", String.valueOf(event.getPrice()),
+                    "%xp%", String.valueOf(event.getXp()),
+                    "%totalxp%", String.valueOf(manager.getXP(player.getUniqueId()))
+            );
+
+            FileConfiguration records = this.plugin.getRecordsYaml().getAccess();
+            records.set("records." + player.getName() + "." + mobType,
+                    records.getInt("records." + player.getName() + "." + mobType) + amount);
+            this.plugin.getRecordsYaml().save(false);
         }
 
-//
-//        FileConfiguration config = plugin.getConfigYaml().getAccess();
-//        Economy economy = plugin.getEconomy();
-//        LevelsManager manager = plugin.getLevelsManager();
-//
-//        int amount = inHand.getAmount();
-//        price = config.getDouble("heads." + mobType + ".price") * amount;
-//        int xp = config.getInt("heads." + mobType + ".exp") * amount;
-//
-//        inHand.setAmount(0);
-//
-//        economy.depositPlayer(player, price);
-//        manager.addXP(player.getUniqueId(), xp);
-//
-//        messageSender.send(player, headSold
-//                .replace("%amount%", String.valueOf(amount))
-//                .replace("%type%", mobType)
-//                .replace("%price%", String.valueOf(price))
-//                .replace("%xp%", String.valueOf(xp))
-//                .replace("%totalxp%", String.valueOf(manager.getXP(player.getUniqueId())))
-//        );
-//
-//        FileConfiguration records = plugin.getRecordsYaml().getAccess();
-//        records.set("records."+player.getName()+"."+mobType, records.getInt("records."+player.getName()+"."+mobType)+amount);
-//        plugin.getRecordsYaml().save();
-//
-//
+
 
     }
 }
