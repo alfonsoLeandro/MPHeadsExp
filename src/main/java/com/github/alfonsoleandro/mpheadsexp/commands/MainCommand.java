@@ -8,7 +8,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
-
 public final class MainCommand implements CommandExecutor {
 
     private final AbstractHandler commandHandler;

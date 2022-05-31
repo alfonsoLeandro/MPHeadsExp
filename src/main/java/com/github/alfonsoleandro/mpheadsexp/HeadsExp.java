@@ -4,9 +4,10 @@ import com.github.alfonsoleandro.mpheadsexp.commands.HeadsCommand;
 import com.github.alfonsoleandro.mpheadsexp.commands.tabcompleters.HeadsCommandTabAutoCompleter;
 import com.github.alfonsoleandro.mpheadsexp.commands.MainCommand;
 import com.github.alfonsoleandro.mpheadsexp.commands.tabcompleters.MainCommandTabAutoCompleter;
-import com.github.alfonsoleandro.mpheadsexp.listeners.HeadPlaceEvent;
-import com.github.alfonsoleandro.mpheadsexp.listeners.InfoGUIClickEvent;
-import com.github.alfonsoleandro.mpheadsexp.listeners.PlayerKillMobEvent;
+import com.github.alfonsoleandro.mpheadsexp.listeners.HeadBreakListener;
+import com.github.alfonsoleandro.mpheadsexp.listeners.HeadPlaceListener;
+import com.github.alfonsoleandro.mpheadsexp.listeners.InfoGUIClickListener;
+import com.github.alfonsoleandro.mpheadsexp.listeners.PlayerKillMobListener;
 import com.github.alfonsoleandro.mpheadsexp.managers.HeadsManager;
 import com.github.alfonsoleandro.mpheadsexp.managers.LevelsManager;
 import com.github.alfonsoleandro.mpheadsexp.managers.Settings;
@@ -15,8 +16,10 @@ import com.github.alfonsoleandro.mputils.files.YamlFile;
 import com.github.alfonsoleandro.mputils.managers.MessageSender;
 import com.github.alfonsoleandro.mputils.reloadable.ReloaderPlugin;
 import net.milkbowl.vault.economy.Economy;
+import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.jetbrains.annotations.NotNull;
@@ -46,7 +49,9 @@ public final class HeadsExp extends ReloaderPlugin {
     @Override
     public void onEnable() {
         registerFiles();
+        Bukkit.broadcastMessage("ENABLE");
         this.settings = new Settings(this);
+        Bukkit.broadcastMessage("SETTINGS");
         this.messageSender = new MessageSender<>(this, Message.values(), this.languageYaml, "prefix");
         this.messageSender.send("&aEnabled&f. Version: &e" + this.version);
         this.messageSender.send("&fThank you for using my plugin! &" + this.color + getDescription().getName() + "&f By " + getDescription().getAuthors().get(0));
@@ -81,7 +86,7 @@ public final class HeadsExp extends ReloaderPlugin {
 
 
     public boolean setupEconomy() {
-        if(getServer().getPluginManager().isPluginEnabled("Vault")) return false;
+        if(!getServer().getPluginManager().isPluginEnabled("Vault")) return false;
         RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
         if(rsp == null) return false;
         this.economy = rsp.getProvider();
@@ -125,9 +130,10 @@ public final class HeadsExp extends ReloaderPlugin {
      */
     private void registerEvents() {
         PluginManager pm = getServer().getPluginManager();
-        pm.registerEvents(new PlayerKillMobEvent(this), this);
-        pm.registerEvents(new HeadPlaceEvent(this), this);
-        pm.registerEvents(new InfoGUIClickEvent(this), this);
+        pm.registerEvents(new PlayerKillMobListener(this), this);
+        pm.registerEvents(new HeadPlaceListener(this), this);
+        pm.registerEvents(new InfoGUIClickListener(this), this);
+        pm.registerEvents(new HeadBreakListener(this), this);
     }
 
 

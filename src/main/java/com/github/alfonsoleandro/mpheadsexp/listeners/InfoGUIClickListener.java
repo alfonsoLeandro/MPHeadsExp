@@ -20,11 +20,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class InfoGUIClickEvent implements Listener {
+public class InfoGUIClickListener implements Listener {
 
     private final HeadsExp plugin;
 
-    public InfoGUIClickEvent(HeadsExp plugin){
+    public InfoGUIClickListener(HeadsExp plugin){
         this.plugin = plugin;
     }
 

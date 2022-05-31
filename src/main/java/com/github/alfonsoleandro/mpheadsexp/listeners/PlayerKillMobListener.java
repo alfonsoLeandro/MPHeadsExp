@@ -12,12 +12,12 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Random;
 
-public class PlayerKillMobEvent implements Listener {
+public class PlayerKillMobListener implements Listener {
 
     private final HeadsExp plugin;
     private final Random r;
 
-    public PlayerKillMobEvent(HeadsExp plugin){
+    public PlayerKillMobListener(HeadsExp plugin){
         this.plugin = plugin;
         r = new Random();
     }
@@ -54,7 +54,7 @@ public class PlayerKillMobEvent implements Listener {
                             .replace("%amount%", String.valueOf(amount)));
 
         }else {
-            head = plugin.getHeadsManager().getMobHead(event.getEntityType().toString());
+            head = plugin.getHeadsManager().getMobHeadData(event.getEntityType().toString()).getHeadItem();
             if(head == null) return;
             //TODO leave hardcoded probability?
             if(3 > r.nextInt(10)) return;

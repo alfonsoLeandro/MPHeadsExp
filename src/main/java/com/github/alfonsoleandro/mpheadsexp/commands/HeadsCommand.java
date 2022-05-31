@@ -30,7 +30,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
-public class HeadsCommand implements CommandExecutor {
+public final class HeadsCommand implements CommandExecutor {
 
     private final AbstractHandler commandHandler;
 

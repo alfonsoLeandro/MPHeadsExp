@@ -65,6 +65,12 @@ invalid number: '&c"&e%input%&c" is not a valid number.'
 # Message sent when sending an invalid type.
 # %input%: The invalid type sent.
 invalid type: '&c"&e%input%&c" is not a valid type.'
+# Message sent when trying to add a head to another player's inventory with not enough space
+# %player%: The player with the full inventory.
+player inventory full: '&cCould not add items to %player%''s inventory'
+# Message sent when trying to add a head to your inventory with not enough space
+# %player%: The player with the full inventory.
+your inventory full: '&cCould not add items to your inventory'
 # Message sent when adding heads to yourself.
 # %amount%: The amount of heads added.
 # %type%: The type of head added.

@@ -18,11 +18,14 @@ public enum Message implements MessageEnum {
     SELF_ADDED_HEAD("self added", "&aSuccessfully added %amount%X %type% heads to your inventory"),
     SOMEONE_ADDED_HEAD_TO_YOU("someone added", "&a%player% just sent you %amount%X %type% heads"),
     ADDED_HEAD_TO_SOMEONE("added to someone", "&aYou just added %amount%X %type% heads to %player%"),
+    PLAYER_INVENTORY_FULL("&cCould not add items to %player%''s inventory"),
+    YOUR_INVENTORY_FULL( "&cCould not add items to your inventory"),
     CANNOT_SEND_CONSOLE("&cThat command can only be sent by a player"),
     MUST_BE_HOLDING_HEAD("&cYou must be holding a valid head in your hand."),
     HEAD_WORTH("&c%head%&f''s head worth is: &e%money%$ &fand &e%xp% &fexperience"),
     PLAYER_HEAD_SOLD("&aSuccessfully sold %amount% heads of player %player% for %price%$ and %xp%XP (%totalxp% total xp)"),
     HEAD_SOLD("&aSuccessfully sold %amount% %type% heads for %price%$ and %xp%XP (%totalxp% total xp)"),
+    CANNOT_PLACE_HEAD("cannot place","&cYou shouldn't place that head on the floor, it is highly valuable!"),
     ;
 
     private final String path;

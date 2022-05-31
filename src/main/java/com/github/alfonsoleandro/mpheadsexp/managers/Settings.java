@@ -2,7 +2,6 @@ package com.github.alfonsoleandro.mpheadsexp.managers;
 
 import com.github.alfonsoleandro.mpheadsexp.HeadsExp;
 import com.github.alfonsoleandro.mputils.reloadable.Reloadable;
-import jdk.javadoc.internal.doclets.formats.html.markup.Head;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.List;
@@ -12,6 +11,7 @@ public class Settings extends Reloadable {
     private final HeadsExp plugin;
 
     private boolean defaultPlayerHeadEnabled;
+    private boolean allowPlacingHeads;
 
     private double defaultPlayerHeadExp;
     private double defaultPlayerHeadBalance;
@@ -25,12 +25,14 @@ public class Settings extends Reloadable {
     public Settings(HeadsExp plugin) {
         super(plugin);
         this.plugin = plugin;
+        loadFields();
     }
 
     private void loadFields() {
         FileConfiguration config = this.plugin.getConfigYaml().getAccess();
 
         this.defaultPlayerHeadEnabled = config.getBoolean("default head enabled");
+        this.allowPlacingHeads = config.getBoolean("allow placing");
 
         this.defaultPlayerHeadExp = config.getDouble("player heads.default head.exp");
         this.defaultPlayerHeadBalance = config.getDouble("player heads.default head.balance");
@@ -49,6 +51,11 @@ public class Settings extends Reloadable {
         return this.defaultPlayerHeadEnabled;
     }
 
+    public boolean isAllowPlacingHeads() {
+        return this.allowPlacingHeads;
+    }
+
+
     public double getDefaultPlayerHeadExp() {
         return this.defaultPlayerHeadExp;
     }
@@ -57,6 +64,7 @@ public class Settings extends Reloadable {
         return this.defaultPlayerHeadBalance;
     }
 
+
     public String getHeadsName() {
         return this.headsName;
     }
@@ -64,6 +72,7 @@ public class Settings extends Reloadable {
     public String getPlayerHeadsName() {
         return this.playerHeadsName;
     }
+
 
     public List<String> getHeadsLore() {
         return this.headsLore;
