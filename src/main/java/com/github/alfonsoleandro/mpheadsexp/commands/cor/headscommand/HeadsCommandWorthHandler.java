@@ -52,39 +52,25 @@ public class HeadsCommandWorthHandler extends AbstractHandler {
             return;
         }
         PersistentDataContainer data = Objects.requireNonNull(inHand.getItemMeta()).getPersistentDataContainer();
-
-        boolean isNotHead = true;
-        boolean isPlayerHead = false;
-        double price = 0;
-        double xp;
-        String mobType = "";
-
-        for (NamespacedKey key : data.getKeys()) {
-            if(data.has(key, PersistentDataType.STRING)) {
-                String string = data.get(key, PersistentDataType.STRING);
-                assert string != null;
-                if(string.startsWith("HEAD") || string.startsWith("PLAYER-HEAD")) {
-                    isNotHead = false;
-                    if(string.startsWith("PLAYER-HEAD")){
-                        isPlayerHead = true;
-                        price = Double.parseDouble(string.split(":")[2]); //"PLAYER-HEAD:%player_name%:%price%"
-                    }
-                    mobType = string.split(":")[1];
-                    break;
-                }
-            }
-        }
-
-        if(isNotHead) {
+        NamespacedKey key = new NamespacedKey(this.plugin, "MPHeads");
+        if(!data.has(key, PersistentDataType.STRING)) {
             this.messageSender.send(sender, Message.MUST_BE_HOLDING_HEAD);
             return;
         }
-
-
-        if(isPlayerHead){
+        String string = data.get(key, PersistentDataType.STRING);
+        assert string != null;
+        if(!string.startsWith("HEAD") && !string.startsWith("PLAYER-HEAD")) {
+            this.messageSender.send(sender, Message.MUST_BE_HOLDING_HEAD);
+            return;
+        }
+        String mobType = string.split(":")[1];
+        double xp;
+        double price;
+        if(string.startsWith("PLAYER-HEAD")){
             PlayerHeadDataValues playerHeadDataValues = this.headsManager.getPlayerHeadDataValues(mobType);
             xp = playerHeadDataValues == null ? this.settings.getDefaultPlayerHeadExp() : playerHeadDataValues.getXp();
-        }else {
+            price = Double.parseDouble(string.split(":")[2]); //"PLAYER-HEAD:%player_name%:%price%"
+        }else{
             price = this.headsManager.getMobHeadData(mobType).getPrice();
             xp = this.headsManager.getMobHeadData(mobType).getXp();
         }
