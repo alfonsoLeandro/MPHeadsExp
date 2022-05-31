@@ -57,40 +57,26 @@ public class HeadsCommandSellHandler extends AbstractHandler {
         }
         PersistentDataContainer data = Objects.requireNonNull(inHand.getItemMeta()).getPersistentDataContainer();
 
-        boolean isNotHead = true;
-        boolean isPlayerHead = false;
-        double price = 0;
-        double xp;
-        String mobType = "";
 
-        for (NamespacedKey key : data.getKeys()) {
-            if(data.has(key, PersistentDataType.STRING)) {
-                String string = data.get(key, PersistentDataType.STRING);
-                assert string != null;
-                if(string.startsWith("HEAD") || string.startsWith("PLAYER-HEAD")) {
-                    isNotHead = false;
-                    if(string.startsWith("PLAYER-HEAD")){
-                        isPlayerHead = true;
-                        price = Double.parseDouble(string.split(":")[2]); //"PLAYER-HEAD:%player_name%:%price%"
-                    }
-                    mobType = string.split(":")[1];
-                    break;
-                }
-            }
+        NamespacedKey key = new NamespacedKey(this.plugin, "MPHeads");
+        if(!data.has(key, PersistentDataType.STRING)) {
+            this.messageSender.send(sender, Message.MUST_BE_HOLDING_HEAD);
+            return;
         }
-
-        if(isNotHead) {
+        String string = data.get(key, PersistentDataType.STRING);
+        assert string != null;
+        if(!string.startsWith("HEAD") && !string.startsWith("PLAYER-HEAD")) {
             this.messageSender.send(sender, Message.MUST_BE_HOLDING_HEAD);
             return;
         }
 
-
-
-        if(isPlayerHead){
-            PlayerHeadDataValues playerHeadDataValues = this.headsManager.getPlayerHeadDataValues(mobType);
+        if(string.startsWith("PLAYER-HEAD")){
+            String playerName = string.split(":")[1];
+            PlayerHeadDataValues playerHeadDataValues = this.headsManager.getPlayerHeadDataValues(playerName);
+            double price = Double.parseDouble(string.split(":")[2]); //"PLAYER-HEAD:%player_name%:%price%"
+            double xp = playerHeadDataValues == null ? this.settings.getDefaultPlayerHeadExp() : playerHeadDataValues.getXp();
             Economy economy = this.plugin.getEconomy();
             LevelsManager manager = this.plugin.getLevelsManager();
-            xp = playerHeadDataValues == null ? this.settings.getDefaultPlayerHeadExp() : playerHeadDataValues.getXp();
 
 
             int amount = inHand.getAmount();
@@ -98,7 +84,7 @@ public class HeadsCommandSellHandler extends AbstractHandler {
             xp *= amount;
 
             //TRIGGER EVENT
-            PlayerHeadSellEvent event = new PlayerHeadSellEvent(player, mobType, (int) xp, price, amount);
+            PlayerHeadSellEvent event = new PlayerHeadSellEvent(player, playerName, (int) xp, price, amount);
             Bukkit.getPluginManager().callEvent(event);
             if(event.isCancelled()) return;
 
@@ -108,7 +94,7 @@ public class HeadsCommandSellHandler extends AbstractHandler {
 
             this.messageSender.send(player, Message.PLAYER_HEAD_SOLD,
                     "%amount%", String.valueOf(amount),
-                    "%player%", mobType,
+                    "%player%", playerName,
                     "%price%", String.valueOf(event.getPrice()),
                     "%xp%", String.valueOf(event.getXp()),
                     "%totalxp%", String.valueOf(manager.getXP(player.getUniqueId()))
@@ -116,15 +102,17 @@ public class HeadsCommandSellHandler extends AbstractHandler {
 
 
             FileConfiguration records = this.plugin.getRecordsYaml().getAccess();
-            records.set("records."+player.getName()+".players."+mobType,
-                    records.getInt("records."+player.getName()+"."+mobType)+amount);
+            records.set("records."+player.getName()+".players."+playerName,
+                    records.getInt("records."+player.getName()+"."+playerName)+amount);
             this.plugin.getRecordsYaml().save(true);
 
-        }else {
+
+        }else{
             Economy economy = this.plugin.getEconomy();
             LevelsManager manager = this.plugin.getLevelsManager();
-            price = this.headsManager.getMobHeadData(mobType).getPrice();
-            xp = this.headsManager.getMobHeadData(mobType).getXp();
+            String mobType = string.split(":")[1];
+            double price = this.headsManager.getMobHeadData(mobType).getPrice();
+            double xp = this.headsManager.getMobHeadData(mobType).getXp();
 
             int amount = inHand.getAmount();
             price *= amount;
@@ -152,8 +140,8 @@ public class HeadsCommandSellHandler extends AbstractHandler {
             records.set("records." + player.getName() + "." + mobType,
                     records.getInt("records." + player.getName() + "." + mobType) + amount);
             this.plugin.getRecordsYaml().save(false);
-        }
 
+        }
 
 
     }
