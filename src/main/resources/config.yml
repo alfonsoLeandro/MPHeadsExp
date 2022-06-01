@@ -55,21 +55,33 @@ heads name and lore:
 gui navigation bar items:
   # The item at the middle of the page.
   current page:
+    # The type of item to be displayed.
+    item: BOOK
     name: '&c&lPage: &e%page%&f/&e%totalpages%'
     # Use [] for an empty lore.
     lore: []
   # The item to click to go to the next page.
   next page:
+    # The type of item to be displayed.
+    item: ARROW
     name: '&fNext page &e&l-->'
     lore:
       - '&fClick here to go'
       - '&fto page %nextpage%'
   # The item to click to go to the previous page.
   previous page:
+    # The type of item to be displayed.
+    item: ARROW
     name: '&e&l<-- &fPrevious page'
     lore:
       - '&fClick here to go'
       - '&fto page %previouspage%'
+  # The item that serves the purpose of filling empty navigation bar spaces
+  navBar item:
+    # The type of item to be displayed.
+    item: BLACK_STAINED_GLASS_PANE
+    name: '&7&l*'
+    lore: []
 # Settings for the gui (menu) that will open when doing "/heads info"
 info gui:
   # The title for the menu
@@ -215,7 +227,7 @@ heads:
     price: 41
   RABBIT:
     url: ffecc6b5e6ea5ced74c46e7627be3f0826327fba26386c6cc7863372e9bc
-    required level: 1
+    required level: 0
     exp: 5
     price: 5
   SHEEP:
@@ -240,6 +252,6 @@ heads:
     price: 30
   CHICKEN:
     url: 1638469a599ceef7207537603248a9ab11ff591fd378bea4735b346a7fae893
-    required level: 1
+    required level: 0
     exp: 10
     price: 10

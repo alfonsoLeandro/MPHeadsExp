@@ -53,14 +53,16 @@ public class HeadsManager extends Reloadable {
         ConfigurationSection mobHeads = this.plugin.getConfigYaml().getAccess().getConfigurationSection("heads");
         if(mobHeads != null) {
             for (String mobType : mobHeads.getKeys(false)) {
-                this.mobHeads.put(mobType, new MobHeadData(mobHeads.getDouble(mobType + ".price"),
+                this.mobHeads.put(mobType,
+                        new MobHeadData(mobHeads.getDouble(mobType + ".price"),
                                 mobHeads.getInt(mobType + ".exp"),
                                 mobType,
                                 createSkull(mobHeads.getString(mobType + ".url"),
                                         mobType,
                                         mobHeads.getInt(mobType + ".exp"),
                                         mobHeads.getInt(mobType + ".price")
-                                )
+                                        ),
+                                mobHeads.getInt(mobType+".required level")
                         )
                 );
             }
@@ -227,6 +229,10 @@ public class HeadsManager extends Reloadable {
 
     public PlayerHeadDataValues getPlayerHeadDataValues(String playerName){
         return this.playerHeadData.get(playerName);
+    }
+
+    public Map<String, MobHeadData> getMobHeads() {
+        return this.mobHeads;
     }
 
     public void reload(boolean deep){

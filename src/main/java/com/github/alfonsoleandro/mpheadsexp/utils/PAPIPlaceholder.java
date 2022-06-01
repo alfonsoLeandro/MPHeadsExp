@@ -70,7 +70,7 @@ public class PAPIPlaceholder extends PlaceholderExpansion {
         if(identifier.equals("level")){
             return String.valueOf(this.plugin.getLevelsManager().getLevel(player.getUniqueId()));
         }
-        // %MPHeadsExpp_xp%
+        // %MPHeadsExp_xp% / %MPHeadsExp_exp%
         if(identifier.equals("xp") || identifier.equals("exp")){
             return String.valueOf(this.plugin.getLevelsManager().getXP(player.getUniqueId()));
         }

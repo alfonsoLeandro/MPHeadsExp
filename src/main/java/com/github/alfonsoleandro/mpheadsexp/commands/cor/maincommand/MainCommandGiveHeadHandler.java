@@ -69,6 +69,7 @@ public class MainCommandGiveHeadHandler extends AbstractHandler {
                 this.messageSender.send(sender, Message.PLAYER_INVENTORY_FULL,
                         "%player%", args[1]);
             }
+            return;
         }
         toGive.getInventory().addItem(item);
 
