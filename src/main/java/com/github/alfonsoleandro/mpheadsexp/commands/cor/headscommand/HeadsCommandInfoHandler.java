@@ -14,7 +14,6 @@ import org.bukkit.entity.Player;
 import java.util.HashMap;
 import java.util.Map;
 
-//TODO: fix GUI
 public class HeadsCommandInfoHandler extends AbstractHandler {
 
     private final LevelsManager levelsManager;
