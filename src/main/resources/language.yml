@@ -18,7 +18,7 @@ head worth: '&c%head%&f''s head worth is: &e%money%$ &fand &e%xp% &fexperience'
 not enough level: '&cYou need to be at least level %level% to get a %type% head, you are currently level %current_level%'
 # Message sent when a mob successfully drops their head.
 # %type%: The type of mob that dropped their head.
-head dropped: '&aThe %type% you just killed dropped their head!'
+mob head dropped: '&aThe %type% you just killed dropped their head!'
 # Message sent when a player drops their head.
 # %player%: The name of the player that dropped their head.
 player head dropped: '&aYou just received %player%''s head!'

@@ -235,6 +235,10 @@ public class HeadsManager extends Reloadable {
         return this.mobHeads;
     }
 
+    public PlayerHeadData getPlayerHeadData(String playerName) {
+        return this.playerHeads.get(playerName);
+    }
+
     public void reload(boolean deep){
         this.mobHeads.clear();
         this.playerHeads.clear();

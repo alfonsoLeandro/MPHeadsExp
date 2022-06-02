@@ -29,6 +29,10 @@ public enum Message implements MessageEnum {
     ADDED_XP_BOSSBAR_TITLE("&a&l%xp%XP added! &f(%next%XP needed for the next level)"),
     LEVEL_UP_BOSSBAR_TITLE("&a&lLevel UP! &e(&c%previous% &e-> &a%new%)"),
     SET_XP_BOSSBAR_TITLE("&f&lXP changed &e(&c%previous% &e-> &a%new%)"),
+    PLAYER_HEAD_DROPPED("&aYou just received %player%'s head!"),
+    YOUR_HEAD_DROPPED("&cYou just dropped your head and lost %balance%% of your balance (%amount%)"),
+    NOT_ENOUGH_LEVEL("&cYou need to be at least level %level% to get a %type% head, you are currently level %current_level%"),
+    MOB_HEAD_DROPPED("&aThe %type% you just killed dropped their head!"),
     ;
 
     private final String path;

@@ -26,6 +26,7 @@ public class Settings extends Reloadable {
     private int infoUnlockedHeadsGUIItemSlot;
     private int infoSoldHeadsGUIItemSlot;
     private int expPerLevel;
+    private int mobHeadDropProbability;
 
     private double defaultPlayerHeadExp;
     private double defaultPlayerHeadBalance;
@@ -75,6 +76,7 @@ public class Settings extends Reloadable {
         this.infoUnlockedHeadsGUIItemSlot = config.getInt("info gui.unlocked heads item.slot");
         this.infoSoldHeadsGUIItemSlot = config.getInt("info gui.sold heads item.slot");
         this.expPerLevel = Math.max(config.getInt("exp per level"), 1);
+        this.mobHeadDropProbability = config.getInt("mob head drop probability");
 
         this.defaultPlayerHeadExp = config.getDouble("player heads.default head.exp");
         this.defaultPlayerHeadBalance = config.getDouble("player heads.default head.balance");
@@ -196,6 +198,10 @@ public class Settings extends Reloadable {
 
     public int getExpPerLevel() {
         return this.expPerLevel;
+    }
+
+    public int getMobHeadDropProbability() {
+        return this.mobHeadDropProbability;
     }
 
 

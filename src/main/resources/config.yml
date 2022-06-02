@@ -4,6 +4,8 @@ exp per level: 1000
 allow placing: false
 # If this is set to false, only specified players will be able to drop their head.
 default head enabled: true
+# The probability (out of 100) for a mob to drop their head.
+mob head drop probability: 25
 # Settings for the bars that appear at the top of the screen when a player's XP changes.
 boss bars:
   # When a player is manually added XP or by selling a head.

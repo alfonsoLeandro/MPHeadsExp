@@ -26,7 +26,7 @@ public class LevelsManager {
     private final Settings settings;
     private final MessageSender<Message> messageSender;
     private final Map<Player, PreviousBarObjects> bossBars = new HashMap<>();
-    private final Map<UUID, Integer> players = new HashMap<>();
+    private final Map<UUID, Integer> playerXP = new HashMap<>();
 
 
     public LevelsManager(HeadsExp plugin){
@@ -39,19 +39,19 @@ public class LevelsManager {
 
     //XP & Levels
     public int getXP(UUID player){
-        if(!this.players.containsKey(player)) this.players.put(player, 0);
-        return this.players.get(player);
+        if(!this.playerXP.containsKey(player)) this.playerXP.put(player, 0);
+        return this.playerXP.get(player);
     }
 
     public int getLevel(UUID player){
-        if(!this.players.containsKey(player)) this.players.put(player, 0);
-        return this.players.get(player)/this.settings.getExpPerLevel();
+        if(!this.playerXP.containsKey(player)) this.playerXP.put(player, 0);
+        return this.playerXP.get(player)/this.settings.getExpPerLevel();
     }
 
     public void addXP(UUID player, int xp){
-        if(!this.players.containsKey(player)) this.players.put(player, 0);
+        if(!this.playerXP.containsKey(player)) this.playerXP.put(player, 0);
         int previousLevel = getLevel(player);
-        this.players.put(player, this.players.get(player)+xp);
+        this.playerXP.put(player, this.playerXP.get(player)+xp);
 
         if(getLevel(player) > previousLevel) {
             levelUpBossBar(Objects.requireNonNull(Bukkit.getPlayer(player)), previousLevel);
@@ -61,9 +61,9 @@ public class LevelsManager {
     }
 
     public void setXP(UUID player, int xp){
-        if(!this.players.containsKey(player)) this.players.put(player, 0);
+        if(!this.playerXP.containsKey(player)) this.playerXP.put(player, 0);
         int previousXP = getXP(player);
-        this.players.put(player, xp);
+        this.playerXP.put(player, xp);
         setXPBossbar(Objects.requireNonNull(Bukkit.getPlayer(player)), previousXP);
     }
 
@@ -183,7 +183,7 @@ public class LevelsManager {
         if(players == null) return;
 
         for(String uuid : players.getKeys(false)){
-            this.players.put(UUID.fromString(uuid), players.getInt(uuid));
+            this.playerXP.put(UUID.fromString(uuid), players.getInt(uuid));
         }
         this.plugin.getPlayersYaml().getAccess().set("players", null);
         this.plugin.getPlayersYaml().save(true);
@@ -192,8 +192,8 @@ public class LevelsManager {
     public void saveLevelsToFile(){
         FileConfiguration players = this.plugin.getPlayersYaml().getAccess();
 
-        for(UUID player : this.players.keySet()){
-            players.set("players."+player, this.players.get(player));
+        for(UUID player : this.playerXP.keySet()){
+            players.set("players."+player, this.playerXP.get(player));
         }
         this.plugin.getPlayersYaml().save(false);
     }
