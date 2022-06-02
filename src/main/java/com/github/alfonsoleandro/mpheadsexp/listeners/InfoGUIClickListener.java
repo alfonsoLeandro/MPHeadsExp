@@ -126,10 +126,7 @@ public class InfoGUIClickListener implements Listener {
                     placeHolders));
         }
 
-        headList.setNavBar(this.settings.getNavBar());
-
         headList.openGUI(player);
-
     }
 
 
@@ -137,9 +134,17 @@ public class InfoGUIClickListener implements Listener {
     private void openSoldHeadsGUI(Player player){
         FileConfiguration config = plugin.getConfigYaml().getAccess();
         ConfigurationSection playerRecords = plugin.getRecordsYaml().getAccess().getConfigurationSection("records."+player.getName());
-        List<ItemStack> items = new ArrayList<>();
+
+        String title = this.settings.getSoldHeadsGUITitle();
+
+        DynamicGUI soldHeadsGUI = new DynamicGUI(
+                StringUtils.colorizeString('&', title),
+                "MPHeadsExp:soldHeads",
+                this.settings.getNavBar()
+        );
+
         if(playerRecords == null) {
-            items.add(MPItemStacks.newItemStack(
+            soldHeadsGUI.addItem(MPItemStacks.newItemStack(
                     Material.BARRIER,
                     1,
                     config.getString("sold heads gui.none sold.name"),
@@ -169,6 +174,12 @@ public class InfoGUIClickListener implements Listener {
                             (e1, e2) -> e1,
                             LinkedHashMap::new));
 
+//            TODO: compare these 2 sorting methods
+//            unlockedHeads = unlockedHeads.entrySet()
+//                    .stream()
+//                    .sorted(Map.Entry.comparingByValue())
+//                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+
 
             for (String type : register.keySet()) {
                 ItemStack head;
@@ -188,23 +199,11 @@ public class InfoGUIClickListener implements Listener {
                 meta.setLore(lore);
                 head.setItemMeta(meta);
 
-                items.add(head);
+                soldHeadsGUI.addItem(head);
             }
         }
 
-        String title = config.getString("sold heads gui.title");
-        int size = 54;
-
-        PaginatedGUI soldHeads = new PaginatedGUI(
-                StringUtils.colorizeString('&', title),
-                size,
-                items,
-                "MPHeadsExp:soldHeads"
-        );
-
-        soldHeads.setNavBar(this.settings.getNavBar());
-
-        soldHeads.openGUI(player);
+        soldHeadsGUI.openGUI(player);
     }
 
 

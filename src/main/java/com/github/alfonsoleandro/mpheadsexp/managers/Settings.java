@@ -35,6 +35,7 @@ public class Settings extends Reloadable {
     private String unlockedHeadsGUIUnlockedHead;
     private String unlockedHeadsGUIItemName;
     private String unlockedHeadsGUITitle;
+    private String soldHeadsGUITitle;
 
     private List<String> headsLore;
     private List<String> playerHeadsLore;
@@ -75,6 +76,7 @@ public class Settings extends Reloadable {
         this.unlockedHeadsGUIUnlockedHead = config.getString("unlocked heads gui.unlocked");
         this.unlockedHeadsGUIItemName = config.getString("unlocked heads gui.heads.name");
         this.unlockedHeadsGUITitle = config.getString("unlocked heads gui.title");
+        this.soldHeadsGUITitle = config.getString("sold heads gui.title");
 
         this.headsLore = config.getStringList("heads name and lore.lore");
         this.playerHeadsLore = config.getStringList("heads name and lore.player heads.lore");
@@ -200,6 +202,10 @@ public class Settings extends Reloadable {
 
     public String getUnlockedHeadsGUITitle() {
         return this.unlockedHeadsGUITitle;
+    }
+
+    public String getSoldHeadsGUITitle() {
+        return this.soldHeadsGUITitle;
     }
 
 
