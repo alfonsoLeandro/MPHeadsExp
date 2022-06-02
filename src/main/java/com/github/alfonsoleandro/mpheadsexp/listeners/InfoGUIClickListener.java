@@ -6,20 +6,16 @@ import com.github.alfonsoleandro.mpheadsexp.managers.LevelsManager;
 import com.github.alfonsoleandro.mpheadsexp.managers.Settings;
 import com.github.alfonsoleandro.mpheadsexp.managers.utils.MobHeadData;
 import com.github.alfonsoleandro.mputils.guis.DynamicGUI;
-import com.github.alfonsoleandro.mputils.guis.PaginatedGUI;
 import com.github.alfonsoleandro.mputils.guis.events.GUIButtonClickEvent;
 import com.github.alfonsoleandro.mputils.guis.events.GUIClickEvent;
 import com.github.alfonsoleandro.mputils.itemstacks.MPItemStacks;
 import com.github.alfonsoleandro.mputils.string.StringUtils;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -103,8 +99,8 @@ public class InfoGUIClickListener implements Listener {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 
         boolean showBarrier = this.settings.isShowBarrierForLockedHeadsGUI();
-        String locked = StringUtils.colorizeString('&', this.settings.getUnlockedHeadsGUILockedHead());
-        String unlocked = StringUtils.colorizeString('&',this.settings.getUnlockedHeadsGUIUnlockedHead());
+        String locked = this.settings.getUnlockedHeadsGUILockedHead();
+        String unlocked = this.settings.getUnlockedHeadsGUIUnlockedHead();
         String name = this.settings.getUnlockedHeadsGUIItemName();
         List<String> lore = this.settings.getUnlockedHeadsGUIItemLore();
 
@@ -115,15 +111,16 @@ public class InfoGUIClickListener implements Listener {
             }else {
                 item = this.plugin.getHeadsManager().getMobHeadData(type).getHeadItem().clone();
             }
-            Map<String,String> placeHolders = new HashMap<>();
-            placeHolders.put("%type%", type);
-            placeHolders.put("%status%", unlockedHeads.get(type) <= level ? unlocked : locked);
-            placeHolders.put("%level%", String.valueOf(level));
-            placeHolders.put("%required%", String.valueOf(unlockedHeads.get(type)));
+            Map<String,String> placeholders = new HashMap<>();
+            placeholders.put("%type%", type);
+            placeholders.put("%status%", unlockedHeads.get(type) <= level ? unlocked : locked);
+            placeholders.put("%level%", String.valueOf(level));
+            placeholders.put("%required%", String.valueOf(unlockedHeads.get(type)));
 
-            headList.addItem(MPItemStacks.replacePlaceholders(
-                    MPItemStacks.rename(item, name, lore),
-                    placeHolders));
+            headList.addItem(MPItemStacks.rename(
+                    MPItemStacks.replacePlaceholders(item, placeholders),
+                    name, lore)
+            );
         }
 
         headList.openGUI(player);
@@ -132,8 +129,7 @@ public class InfoGUIClickListener implements Listener {
 
 
     private void openSoldHeadsGUI(Player player){
-        FileConfiguration config = plugin.getConfigYaml().getAccess();
-        ConfigurationSection playerRecords = plugin.getRecordsYaml().getAccess().getConfigurationSection("records."+player.getName());
+        ConfigurationSection playerRecords = this.plugin.getRecordsYaml().getAccess().getConfigurationSection("records."+player.getName());
 
         String title = this.settings.getSoldHeadsGUITitle();
 
@@ -145,17 +141,18 @@ public class InfoGUIClickListener implements Listener {
 
         if(playerRecords == null) {
             soldHeadsGUI.addItem(MPItemStacks.newItemStack(
-                    Material.BARRIER,
-                    1,
-                    config.getString("sold heads gui.none sold.name"),
-                    config.getStringList("sold heads gui.none sold.lore")
-            ));
+                            Material.BARRIER,
+                            1,
+                            this.settings.getSoldHeadsNoneSoldGUIItemName(),
+                            this.settings.getSoldHeadsNoneSoldGUIItemLore()
+                    )
+            );
         }else{
             Map<String, Integer> register = new HashMap<>();
 
             for (String type : playerRecords.getKeys(false)) {
                 if(type.equalsIgnoreCase("players")) {
-                    for(String playerName : playerRecords.getConfigurationSection("players").getKeys(false)){
+                    for(String playerName : Objects.requireNonNull(playerRecords.getConfigurationSection("players")).getKeys(false)){
                         register.put(playerName, playerRecords.getInt("players."+playerName));
                     }
                     continue;
@@ -174,32 +171,25 @@ public class InfoGUIClickListener implements Listener {
                             (e1, e2) -> e1,
                             LinkedHashMap::new));
 
-//            TODO: compare these 2 sorting methods
-//            unlockedHeads = unlockedHeads.entrySet()
-//                    .stream()
-//                    .sorted(Map.Entry.comparingByValue())
-//                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
-
-
+            String itemName = this.settings.getSoldHeadsSoldHeadGUIItemName();
+            List<String> itemLore = this.settings.getSoldHeadsSoldHeadGUIItemLore();
             for (String type : register.keySet()) {
                 ItemStack head;
-                try{
-                    head = this.plugin.getHeadsManager().getMobHeadData(type).getHeadItem().clone();
-                }catch (Exception e){
+                if(this.headsManager.getMobHeadData(type) == null){
+                    if(this.headsManager.getPlayerHead(type) == null) continue;
                     head = this.plugin.getHeadsManager().getPlayerHead(type).clone();
+                }else {
+                    head = this.plugin.getHeadsManager().getMobHeadData(type).getHeadItem().clone();
                 }
-                ItemMeta meta = head.getItemMeta();
-                assert meta != null;
-                meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', config.getString("sold heads gui.heads.name").replace("%type%", type).replace("%sold%", String.valueOf(register.get(type)))));
 
-                List<String> lore = new ArrayList<>();
-                for (String line : config.getStringList("sold heads gui.heads.lore")) {
-                    lore.add(ChatColor.translateAlternateColorCodes('&', line.replace("%type%", type).replace("%sold%", String.valueOf(register.get(type)))));
-                }
-                meta.setLore(lore);
-                head.setItemMeta(meta);
+                Map<String,String> placeholders = new HashMap<>();
+                placeholders.put("%type%", type);
+                placeholders.put("%sold%", String.valueOf(register.get(type)));
 
-                soldHeadsGUI.addItem(head);
+                soldHeadsGUI.addItem(MPItemStacks.rename(
+                        MPItemStacks.replacePlaceholders(head, placeholders),
+                        itemName, itemLore)
+                );
             }
         }
 

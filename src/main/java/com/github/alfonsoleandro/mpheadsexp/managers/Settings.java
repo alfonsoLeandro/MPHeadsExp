@@ -1,6 +1,7 @@
 package com.github.alfonsoleandro.mpheadsexp.managers;
 
 import com.github.alfonsoleandro.mpheadsexp.HeadsExp;
+import com.github.alfonsoleandro.mpheadsexp.utils.SoundSettings;
 import com.github.alfonsoleandro.mputils.guis.navigation.GUIButton;
 import com.github.alfonsoleandro.mputils.guis.navigation.NavigationBar;
 import com.github.alfonsoleandro.mputils.itemstacks.MPItemStacks;
@@ -24,6 +25,7 @@ public class Settings extends Reloadable {
     private int infoInfoGUIItemSlot;
     private int infoUnlockedHeadsGUIItemSlot;
     private int infoSoldHeadsGUIItemSlot;
+    private int expPerLevel;
 
     private double defaultPlayerHeadExp;
     private double defaultPlayerHeadBalance;
@@ -36,16 +38,23 @@ public class Settings extends Reloadable {
     private String unlockedHeadsGUIItemName;
     private String unlockedHeadsGUITitle;
     private String soldHeadsGUITitle;
+    private String soldHeadsNoneSoldGUIItemName;
+    private String soldHeadsSoldHeadGUIItemName;
 
     private List<String> headsLore;
     private List<String> playerHeadsLore;
     private List<String> unlockedHeadsGUIItemLore;
+    private List<String> soldHeadsNoneSoldGUIItemLore;
+    private List<String> soldHeadsSoldHeadGUIItemLore;
 
     private ItemStack infoInfoGUIItem;
     private ItemStack infoUnlockedHeadsGUIItem;
     private ItemStack infoSoldHeadsGUIItem;
 
     private NavigationBar navBar;
+    private SoundSettings addedXPBossBarSound;
+    private SoundSettings levelUpXPBossBarSound;
+    private SoundSettings setXPBossBarSound;
     //</editor-fold>
 
     public Settings(HeadsExp plugin) {
@@ -65,6 +74,7 @@ public class Settings extends Reloadable {
         this.infoInfoGUIItemSlot = config.getInt("info gui.info item.slot");
         this.infoUnlockedHeadsGUIItemSlot = config.getInt("info gui.unlocked heads item.slot");
         this.infoSoldHeadsGUIItemSlot = config.getInt("info gui.sold heads item.slot");
+        this.expPerLevel = Math.max(config.getInt("exp per level"), 1);
 
         this.defaultPlayerHeadExp = config.getDouble("player heads.default head.exp");
         this.defaultPlayerHeadBalance = config.getDouble("player heads.default head.balance");
@@ -77,10 +87,14 @@ public class Settings extends Reloadable {
         this.unlockedHeadsGUIItemName = config.getString("unlocked heads gui.heads.name");
         this.unlockedHeadsGUITitle = config.getString("unlocked heads gui.title");
         this.soldHeadsGUITitle = config.getString("sold heads gui.title");
+        this.soldHeadsNoneSoldGUIItemName = config.getString("sold heads gui.none sold.name");
+        this.soldHeadsSoldHeadGUIItemName = config.getString("sold heads gui.heads.name");
 
         this.headsLore = config.getStringList("heads name and lore.lore");
         this.playerHeadsLore = config.getStringList("heads name and lore.player heads.lore");
         this.unlockedHeadsGUIItemLore = config.getStringList("unlocked heads gui.heads.lore");
+        this.soldHeadsNoneSoldGUIItemLore = config.getStringList("sold heads gui.none sold.lore");
+        this.soldHeadsSoldHeadGUIItemLore = config.getStringList("sold heads gui.heads.lore");
 
         this.infoInfoGUIItem = MPItemStacks.newItemStack(Material.PLAYER_HEAD, 1,
                 config.getString("info gui.info item.name"),
@@ -133,6 +147,20 @@ public class Settings extends Reloadable {
                     GUIButton.GUIButtonCondition.ALWAYS,
                     null));
         }
+
+
+        this.addedXPBossBarSound = new SoundSettings(
+                config.getString("boss bars.added.sound.name"),
+                config.getDouble("boss bars.added.sound.volume"),
+                config.getDouble("boss bars.added.sound.pitch"));
+        this.levelUpXPBossBarSound = new SoundSettings(
+                config.getString("boss bars.level up.sound.name"),
+                config.getDouble("boss bars.level up.sound.volume"),
+                config.getDouble("boss bars.level up.sound.pitch"));
+        this.setXPBossBarSound = new SoundSettings(
+                config.getString("boss bars.set.sound.name"),
+                config.getDouble("boss bars.set.sound.volume"),
+                config.getDouble("boss bars.set.sound.pitch"));
     }
 
 
@@ -164,6 +192,10 @@ public class Settings extends Reloadable {
 
     public int getInfoSoldHeadsGUIItemSlot() {
         return this.infoSoldHeadsGUIItemSlot;
+    }
+
+    public int getExpPerLevel() {
+        return this.expPerLevel;
     }
 
 
@@ -208,6 +240,14 @@ public class Settings extends Reloadable {
         return this.soldHeadsGUITitle;
     }
 
+    public String getSoldHeadsNoneSoldGUIItemName() {
+        return this.soldHeadsNoneSoldGUIItemName;
+    }
+
+    public String getSoldHeadsSoldHeadGUIItemName() {
+        return this.soldHeadsSoldHeadGUIItemName;
+    }
+
 
     public List<String> getHeadsLore() {
         return this.headsLore;
@@ -219,6 +259,14 @@ public class Settings extends Reloadable {
 
     public List<String> getUnlockedHeadsGUIItemLore() {
         return this.unlockedHeadsGUIItemLore;
+    }
+
+    public List<String> getSoldHeadsNoneSoldGUIItemLore() {
+        return this.soldHeadsNoneSoldGUIItemLore;
+    }
+
+    public List<String> getSoldHeadsSoldHeadGUIItemLore() {
+        return this.soldHeadsSoldHeadGUIItemLore;
     }
 
 
@@ -237,6 +285,19 @@ public class Settings extends Reloadable {
 
     public NavigationBar getNavBar() {
         return this.navBar;
+    }
+
+
+    public SoundSettings getAddedXPBossBarSound() {
+        return this.addedXPBossBarSound;
+    }
+
+    public SoundSettings getLevelUpXPBossBarSound() {
+        return this.levelUpXPBossBarSound;
+    }
+
+    public SoundSettings getSetXPBossBarSound() {
+        return this.setXPBossBarSound;
     }
     //</editor-fold>
 

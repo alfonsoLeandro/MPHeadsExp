@@ -27,7 +27,7 @@ public class HeadBreakListener implements Listener {
         this.plugin = plugin;
         this.headsManager = plugin.getHeadsManager();
     }
-
+//TODO: DROP UNKNOWN HEAD IF NOT FOUND (EG->HEAD PLACED, THEN HEAD TYPE REMOVED FROM CONFIG)
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onBlockBreak(BlockDropItemEvent event){
         Block block = event.getBlock();

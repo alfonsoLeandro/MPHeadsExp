@@ -55,8 +55,8 @@ public final class HeadsExp extends ReloaderPlugin {
         this.messageSender.send("&fThank you for using my plugin! &" + this.color + getDescription().getName() + "&f By " + getDescription().getAuthors().get(0));
         this.messageSender.send("&fJoin my discord server at &chttps://discordapp.com/invite/ZznhQud");
         this.messageSender.send("Please consider subscribing to my yt channel: &c" + getDescription().getWebsite());
-        this.levelsManager = new LevelsManager(this);
         this.headsManager = new HeadsManager(this);
+        this.levelsManager = new LevelsManager(this);
         registerPAPIExpansion();
         if(setupEconomy()){
             this.messageSender.send("&aPlugin Vault and economy found, economy hooked");

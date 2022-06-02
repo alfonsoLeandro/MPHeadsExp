@@ -1,9 +1,9 @@
 package com.github.alfonsoleandro.mpheadsexp.managers;
 
 import com.github.alfonsoleandro.mpheadsexp.HeadsExp;
+import com.github.alfonsoleandro.mpheadsexp.utils.Message;
 import com.github.alfonsoleandro.mpheadsexp.utils.PreviousBarObjects;
-import com.github.alfonsoleandro.mpheadsexp.utils.SoundSettings;
-import com.github.alfonsoleandro.mputils.reloadable.Reloadable;
+import com.github.alfonsoleandro.mputils.managers.MessageSender;
 import com.github.alfonsoleandro.mputils.string.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
@@ -20,138 +20,113 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
-public class LevelsManager extends Reloadable {
+public class LevelsManager {
 
+    private final HeadsExp plugin;
+    private final Settings settings;
+    private final MessageSender<Message> messageSender;
     private final Map<Player, PreviousBarObjects> bossBars = new HashMap<>();
     private final Map<UUID, Integer> players = new HashMap<>();
-    private final Map<String, Integer> heads = new HashMap<>();
-    private final HeadsExp plugin;
-    private int expPerLevel;
-    private String addedXPBossbarTitle;
-    private String levelUpBossbarTitle;
-    private String setXPBossbarTitle;
-    private SoundSettings addedXPBossbarSound;
-    private SoundSettings levelUpXPBossbarSound;
-    private SoundSettings setXPBossbarSound;
 
 
     public LevelsManager(HeadsExp plugin){
-        super(plugin);
         this.plugin = plugin;
-        loadLevelsFromFile();
-        reload(false);
+        this.settings = plugin.getSettings();
+        this.messageSender = plugin.getMessageSender();
+        loadPlayerLevelsFromFile();
     }
 
 
     //XP & Levels
     public int getXP(UUID player){
-        if(!players.containsKey(player)) players.put(player, 0);
-        return players.get(player);
+        if(!this.players.containsKey(player)) this.players.put(player, 0);
+        return this.players.get(player);
     }
 
     public int getLevel(UUID player){
-        if(!players.containsKey(player)) players.put(player, 0);
-        return players.get(player)/expPerLevel;
+        if(!this.players.containsKey(player)) this.players.put(player, 0);
+        return this.players.get(player)/this.settings.getExpPerLevel();
     }
 
     public void addXP(UUID player, int xp){
-        if(!players.containsKey(player)) players.put(player, 0);
+        if(!this.players.containsKey(player)) this.players.put(player, 0);
         int previousLevel = getLevel(player);
-        players.put(player, players.get(player)+xp);
+        this.players.put(player, this.players.get(player)+xp);
 
         if(getLevel(player) > previousLevel) {
-            levelUpBossbar(Objects.requireNonNull(Bukkit.getPlayer(player)), previousLevel);
+            levelUpBossBar(Objects.requireNonNull(Bukkit.getPlayer(player)), previousLevel);
         } else {
-            addXPBossbar(Objects.requireNonNull(Bukkit.getPlayer(player)), xp);
+            addXPBossBar(Objects.requireNonNull(Bukkit.getPlayer(player)), xp);
         }
     }
 
     public void setXP(UUID player, int xp){
-        if(!players.containsKey(player)) players.put(player, 0);
+        if(!this.players.containsKey(player)) this.players.put(player, 0);
         int previousXP = getXP(player);
-        players.put(player, xp);
+        this.players.put(player, xp);
         setXPBossbar(Objects.requireNonNull(Bukkit.getPlayer(player)), previousXP);
     }
 
-
-    //Mob heads
-    public int getLevelRequiredForHead(String mobType){
-        if(!heads.containsKey(mobType)) heads.put(mobType, 0);
-        return heads.get(mobType);
-    }
-
-    public boolean containsType(String type){
-        return heads.containsKey(type);
-    }
-
-
     //Boss bars
-    private void addXPBossbar(Player player, int xp){
+    private void addXPBossBar(Player player, int xp){
         removePreviousBossBars(player);
+        NamespacedKey key = new NamespacedKey(this.plugin, "MPHeadsExp/add/"+player.getName());
 
-        NamespacedKey key = new NamespacedKey(plugin, "MPHeadsExp/add/"+player.getName());
-
-        double extraXP = ((double) getXP(player.getUniqueId()) - getLevel(player.getUniqueId())*expPerLevel);
+        double extraXP = ((double) getXP(player.getUniqueId()) - getLevel(player.getUniqueId())* this.settings.getExpPerLevel());
 
         KeyedBossBar bar = Bukkit.createBossBar(key,
-                StringUtils.colorizeString('&',addedXPBossbarTitle
+                StringUtils.colorizeString('&', this.messageSender.getString(Message.ADDED_XP_BOSSBAR_TITLE)
                         .replace("%xp%", String.valueOf(xp))
-                        .replace("%next%", String.valueOf(expPerLevel-extraXP))),
+                        .replace("%next%", String.valueOf(this.settings.getExpPerLevel()-extraXP))),
                 BarColor.GREEN,
                 BarStyle.SEGMENTED_20);
 
-        bar.setProgress(
-                extraXP
-                        /
-                        (double)expPerLevel);
+        bar.setProgress(extraXP/(double)this.settings.getExpPerLevel());
 
         bar.addPlayer(player);
         player.playSound(player.getLocation(),
-                addedXPBossbarSound.getSound(),
-                addedXPBossbarSound.getVolume(),
-                addedXPBossbarSound.getPitch());
+                this.settings.getAddedXPBossBarSound().getSound(),
+                this.settings.getAddedXPBossBarSound().getVolume(),
+                this.settings.getAddedXPBossBarSound().getPitch());
 
-        bossBars.put(player, new PreviousBarObjects(bar, new BukkitRunnable() {
-            @Override
-            public void run(){
-                removeBossBar(player, bossBars.get(player).getBossbar());
-            }
-        }.runTaskLater(plugin, 80)
+        this.bossBars.put(player, new PreviousBarObjects(bar, new BukkitRunnable() {
+                    @Override
+                    public void run(){
+                        removeBossBar(player, LevelsManager.this.bossBars.get(player).getBossbar());
+                    }
+                }.runTaskLater(this.plugin, 80)
                 )
         );
     }
 
 
-    private void levelUpBossbar(Player player, int previousLevel){
+    private void levelUpBossBar(Player player, int previousLevel){
         removePreviousBossBars(player);
 
-        NamespacedKey key = new NamespacedKey(plugin, "MPHeadsExp/levelUp/"+player.getName());
+        NamespacedKey key = new NamespacedKey(this.plugin, "MPHeadsExp/levelUp/"+player.getName());
         KeyedBossBar bar = Bukkit.createBossBar(key,
-                StringUtils.colorizeString('&', levelUpBossbarTitle
+                StringUtils.colorizeString('&', this.messageSender.getString(Message.LEVEL_UP_BOSSBAR_TITLE)
                         .replace("%previous%", String.valueOf(previousLevel))
                         .replace("%new%", String.valueOf(getLevel(player.getUniqueId())))),
                 BarColor.GREEN,
                 BarStyle.SEGMENTED_20);
 
-        double extraXP = ((double) getXP(player.getUniqueId()) - getLevel(player.getUniqueId())*expPerLevel);
-        bar.setProgress(
-                extraXP
-                        /
-                        (double)expPerLevel);
+        double extraXP = ((double) getXP(player.getUniqueId()) - getLevel(player.getUniqueId())*this.settings.getExpPerLevel());
+        bar.setProgress(extraXP / (double)this.settings.getExpPerLevel());
 
         bar.addPlayer(player);
         player.playSound(player.getLocation(),
-                levelUpXPBossbarSound.getSound(),
-                levelUpXPBossbarSound.getVolume(),
-                levelUpXPBossbarSound.getPitch());
+                this.settings.getLevelUpXPBossBarSound().getSound(),
+                this.settings.getLevelUpXPBossBarSound().getVolume(),
+                this.settings.getLevelUpXPBossBarSound().getPitch());
 
-        bossBars.put(player, new PreviousBarObjects(bar, new BukkitRunnable() {
+        this.bossBars.put(player,
+                new PreviousBarObjects(bar, new BukkitRunnable() {
                     @Override
                     public void run(){
-                        removeBossBar(player, bossBars.get(player).getBossbar());
+                        removeBossBar(player, LevelsManager.this.bossBars.get(player).getBossbar());
                     }
-                }.runTaskLater(plugin, 80)
-                )
+                }.runTaskLater(this.plugin, 80))
         );
 
     }
@@ -159,110 +134,67 @@ public class LevelsManager extends Reloadable {
     private void setXPBossbar(Player player, int previousXp){
         removePreviousBossBars(player);
 
-        NamespacedKey key = new NamespacedKey(plugin, "MPHeadsExp/set/"+player.getName());
+        NamespacedKey key = new NamespacedKey(this.plugin, "MPHeadsExp/set/"+player.getName());
         KeyedBossBar bar = Bukkit.createBossBar(key,
-                StringUtils.colorizeString('&', setXPBossbarTitle
+                StringUtils.colorizeString('&', this.messageSender.getString(Message.SET_XP_BOSSBAR_TITLE)
                         .replace("%previous%", String.valueOf(previousXp))
                         .replace("%new%", String.valueOf(getXP(player.getUniqueId())))),
                 BarColor.GREEN,
                 BarStyle.SEGMENTED_20);
 
-        double extraXP = ((double) getXP(player.getUniqueId()) - getLevel(player.getUniqueId())*expPerLevel);
-        bar.setProgress(
-                extraXP
-                        /
-                        (double)expPerLevel);
+        double extraXP = ((double) getXP(player.getUniqueId()) - getLevel(player.getUniqueId())*this.settings.getExpPerLevel());
+        bar.setProgress(extraXP / (double)this.settings.getExpPerLevel());
 
         bar.addPlayer(player);
         player.playSound(player.getLocation(),
-                setXPBossbarSound.getSound(),
-                setXPBossbarSound.getVolume(),
-                setXPBossbarSound.getPitch());
+                this.settings.getSetXPBossBarSound().getSound(),
+                this.settings.getSetXPBossBarSound().getVolume(),
+                this.settings.getSetXPBossBarSound().getPitch());
 
-        bossBars.put(player, new PreviousBarObjects(bar, new BukkitRunnable() {
+        this.bossBars.put(player,
+                new PreviousBarObjects(bar, new BukkitRunnable() {
                     @Override
                     public void run(){
-                        removeBossBar(player, bossBars.get(player).getBossbar());
+                        removeBossBar(player, LevelsManager.this.bossBars.get(player).getBossbar());
                     }
-                }.runTaskLater(plugin, 80)
-                )
+                }.runTaskLater(this.plugin, 80))
         );
 
     }
 
 
     private void removePreviousBossBars(Player player){
-        if(bossBars.containsKey(player)){
-            bossBars.get(player).getTask().cancel();
-            removeBossBar(player, bossBars.get(player).getBossbar());
+        if(this.bossBars.containsKey(player)){
+            this.bossBars.get(player).getTask().cancel();
+            removeBossBar(player, this.bossBars.get(player).getBossbar());
         }
     }
 
-    private void removeBossBar(Player player, KeyedBossBar bossbar){
-        bossbar.removeAll();
-        Bukkit.removeBossBar(bossbar.getKey());
-        bossBars.remove(player);
+    private void removeBossBar(Player player, KeyedBossBar bossBar){
+        bossBar.removeAll();
+        Bukkit.removeBossBar(bossBar.getKey());
+        this.bossBars.remove(player);
     }
 
 
 
-
-
-    public void loadRequiredLevelsFromFile(){
-        ConfigurationSection heads = plugin.getConfigYaml().getAccess().getConfigurationSection("heads");
-        if(heads == null) return;
-
-        for(String mobType : heads.getKeys(false)){
-            this.heads.put(mobType, heads.getInt(mobType+".required level"));
-        }
-    }
-
-
-    private void loadLevelsFromFile(){
-        ConfigurationSection players = plugin.getPlayersYaml().getAccess().getConfigurationSection("players");
+    private void loadPlayerLevelsFromFile(){
+        ConfigurationSection players = this.plugin.getPlayersYaml().getAccess().getConfigurationSection("players");
         if(players == null) return;
 
         for(String uuid : players.getKeys(false)){
             this.players.put(UUID.fromString(uuid), players.getInt(uuid));
         }
-        plugin.getPlayersYaml().getAccess().set("players", null);
-        plugin.getPlayersYaml().save();
+        this.plugin.getPlayersYaml().getAccess().set("players", null);
+        this.plugin.getPlayersYaml().save(true);
     }
 
     public void saveLevelsToFile(){
-        FileConfiguration players = plugin.getPlayersYaml().getAccess();
+        FileConfiguration players = this.plugin.getPlayersYaml().getAccess();
 
         for(UUID player : this.players.keySet()){
             players.set("players."+player, this.players.get(player));
         }
-        plugin.getPlayersYaml().save();
-    }
-
-    //Util functions
-    @Override
-    public void reload(boolean deep){
-        FileConfiguration config = plugin.getConfigYaml().getAccess();
-        FileConfiguration messages = plugin.getLanguageYaml().getAccess();
-
-        this.expPerLevel = Math.max(config.getInt("exp per level"), 1);
-
-        this.addedXPBossbarTitle = messages.getString("added XP bossbar title");
-        this.levelUpBossbarTitle = messages.getString("level up bossbar title");
-        this.setXPBossbarTitle = messages.getString("set XP bossbar title");
-
-        this.addedXPBossbarSound = new SoundSettings(
-                config.getString("boss bars.added.sound.name"),
-                config.getDouble("boss bars.added.sound.volume"),
-                config.getDouble("boss bars.added.sound.pitch"));
-        this.levelUpXPBossbarSound = new SoundSettings(
-                config.getString("boss bars.level up.sound.name"),
-                config.getDouble("boss bars.level up.sound.volume"),
-                config.getDouble("boss bars.level up.sound.pitch"));
-        this.setXPBossbarSound = new SoundSettings(
-                config.getString("boss bars.set.sound.name"),
-                config.getDouble("boss bars.set.sound.volume"),
-                config.getDouble("boss bars.set.sound.pitch"));
-
-        loadRequiredLevelsFromFile();
+        this.plugin.getPlayersYaml().save(false);
     }
 }
