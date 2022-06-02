@@ -14,10 +14,10 @@ public class PreviousBarObjects {
     }
 
     public KeyedBossBar getBossbar() {
-        return bossbar;
+        return this.bossbar;
     }
 
     public BukkitTask getTask() {
-        return task;
+        return this.task;
     }
 }

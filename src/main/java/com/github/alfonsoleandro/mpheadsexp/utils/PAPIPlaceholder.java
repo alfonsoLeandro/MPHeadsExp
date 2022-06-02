@@ -75,8 +75,7 @@ public class PAPIPlaceholder extends PlaceholderExpansion {
             return String.valueOf(this.plugin.getLevelsManager().getXP(player.getUniqueId()));
         }
 
-        // We return null if an invalid placeholder (f.e. %someplugin_placeholder3%)
-        // was provided
+        // We return null if an invalid placeholder was provided
         return null;
     }
 }

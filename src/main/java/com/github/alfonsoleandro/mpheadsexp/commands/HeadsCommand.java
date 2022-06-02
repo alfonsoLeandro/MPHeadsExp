@@ -6,29 +6,10 @@ import com.github.alfonsoleandro.mpheadsexp.commands.cor.headscommand.HeadsComma
 import com.github.alfonsoleandro.mpheadsexp.commands.cor.headscommand.HeadsCommandInfoHandler;
 import com.github.alfonsoleandro.mpheadsexp.commands.cor.headscommand.HeadsCommandSellHandler;
 import com.github.alfonsoleandro.mpheadsexp.commands.cor.headscommand.HeadsCommandWorthHandler;
-import com.github.alfonsoleandro.mpheadsexp.managers.LevelsManager;
-import com.github.alfonsoleandro.mpheadsexp.utils.Message;
-import com.github.alfonsoleandro.mputils.guis.SimpleGUI;
-import com.github.alfonsoleandro.mputils.itemstacks.MPItemStacks;
-import com.github.alfonsoleandro.mputils.managers.MessageSender;
-import com.github.alfonsoleandro.mputils.reloadable.Reloadable;
-import com.github.alfonsoleandro.mputils.string.StringUtils;
-import net.milkbowl.vault.economy.Economy;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public final class HeadsCommand implements CommandExecutor {
 

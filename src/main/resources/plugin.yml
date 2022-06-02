@@ -11,7 +11,7 @@ website: http://bit.ly/2mwvHWN
 commands:
   headsExp:
     description: HeadsExp admin command.
-    aliases: [he,hexp, hxp]
+    aliases: [he, hexp, hxp]
     usage: Command was not registered properly.
   heads:
     description: HeadsExp user command

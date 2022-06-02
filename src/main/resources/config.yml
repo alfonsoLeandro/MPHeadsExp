@@ -129,7 +129,7 @@ info gui:
       - '&fhow many heads you'
       - '&fhave sold!'
 # Settings for the gui (menu) that will open for the players that click on "unlocked heads" on the info gui.
-# In this GUI (menu) players will see a list of every head and they will see if those heads are locked
+# In this GUI (menu) players will see a list of every head, and they will see if those heads are locked
 # or unlocked for them (locked means mobs won't drop them).
 unlocked heads gui:
   # The title for the gui.
@@ -171,7 +171,7 @@ sold heads gui:
     # %sold%: The amount of heads sold for this type of mob.
     lore:
       - '&fSold: &e%sold%'
-  # Item shown when no records data is found for the player.
+  # Item shown when no records' data is found for the player.
   none sold:
     # The name for the item
     name: '&cNo heads sold yet!'

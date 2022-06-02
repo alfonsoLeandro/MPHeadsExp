@@ -37,7 +37,7 @@ error amount: '&c%input% &eis not a valid number'
 added xp: '&aSuccessfully added %xp% XP to %player% (total: %total%) (level: %level%)'
 # Message sent when sending "loveExp xp see player"
 # %player%: The player to see the xp of.
-# %xp%: The xp of the plauer.
+# %xp%: The xp of the player.
 see xp: '&fXP of player %player%: %xp% (level: %level%)'
 # Message sent when sending "/loveExp xp set player amount"
 # %player%: the player to set the xp to.

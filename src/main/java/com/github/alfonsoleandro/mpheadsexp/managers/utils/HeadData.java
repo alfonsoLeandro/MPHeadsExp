@@ -1,13 +1,9 @@
 package com.github.alfonsoleandro.mpheadsexp.managers.utils;
 
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 public abstract class HeadData {
-//    /**
-//     * The id of the head. the mob type in case it is a mob head, a player's name in other case.
-//     */
-//    protected final String name;
+
     protected double price;
     protected double xp;
     protected ItemStack headItem;
@@ -36,14 +32,6 @@ public abstract class HeadData {
 
     public ItemStack getHeadItem() {
         return this.headItem;
-    }
-
-    public void setHeadItem() {
-        this.headItem = new ItemStack(Material.PLAYER_HEAD);
-    }
-
-    public void load(){
-        //todo
     }
 
 }
