@@ -2,6 +2,7 @@ package com.github.alfonsoleandro.mpheadsexp.listeners;
 
 import com.github.alfonsoleandro.mpheadsexp.HeadsExp;
 import com.github.alfonsoleandro.mpheadsexp.managers.HeadsManager;
+import com.github.alfonsoleandro.mpheadsexp.managers.Settings;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
@@ -22,12 +23,14 @@ public class HeadBreakListener implements Listener {
 
     private final HeadsExp plugin;
     private final HeadsManager headsManager;
+    private final Settings settings;
 
     public HeadBreakListener(HeadsExp plugin) {
         this.plugin = plugin;
         this.headsManager = plugin.getHeadsManager();
+        this.settings = plugin.getSettings();
     }
-//TODO: DROP UNKNOWN HEAD IF NOT FOUND (EG->HEAD PLACED, THEN HEAD TYPE REMOVED FROM CONFIG)
+
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onBlockBreak(BlockDropItemEvent event){
         Block block = event.getBlock();
@@ -61,7 +64,13 @@ public class HeadBreakListener implements Listener {
 
 
         }else if(headData.startsWith("HEAD")){
-            ItemStack head = this.headsManager.getMobHeadData(headData.split(":")[1]).getHeadItem();
+            String mobType = headData.split(":")[1];
+            ItemStack head;
+            if(this.headsManager.getMobHeadData(mobType) == null){
+                head = this.settings.getUnknownHeadItem();
+            }else{
+                head = this.headsManager.getMobHeadData(mobType).getHeadItem();
+            }
             List<Item> itemsToDrop = event.getItems();
             Collection<ItemStack> blockDrops = block.getDrops();
 

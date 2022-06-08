@@ -47,6 +47,11 @@ heads name and lore:
       - '&fSell this item using'
       - '&c&l/heads sell'
       - '&fto get %xp% xp and %balance%% of their balance'
+  unknown head:
+    name: '&7&lUnknown head'
+    lore:
+      - '&7Head of unknown type'
+    url: '' #TODO: question mark url
 # Settings for the navigation bar items.
 # (The items at the bottom of the page on a GUI with pages)
 # For these items you can use the following placeholders:

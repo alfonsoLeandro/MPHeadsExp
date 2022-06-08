@@ -51,6 +51,7 @@ public class Settings extends Reloadable {
     private ItemStack infoInfoGUIItem;
     private ItemStack infoUnlockedHeadsGUIItem;
     private ItemStack infoSoldHeadsGUIItem;
+    private ItemStack unknownHeadItem;
 
     private NavigationBar navBar;
     private SoundSettings addedXPBossBarSound;
@@ -107,6 +108,9 @@ public class Settings extends Reloadable {
         this.infoSoldHeadsGUIItem = MPItemStacks.newItemStack(Material.PLAYER_HEAD, 1,
                 config.getString("info gui.sold heads item.name"),
                 config.getStringList("info gui.sold heads item.lore"));
+        this.unknownHeadItem = MPItemStacks.newItemStack(Material.PLAYER_HEAD, 1,
+                config.getString("heads name and lore.unknown head.name"),
+                config.getStringList("heads name and lore.unknown head.lore"));
 
         ItemStack previousPageItem = MPItemStacks.newItemStack(
                 Material.valueOf(config.getString("gui navigation bar items.previous page.item")),
@@ -288,6 +292,9 @@ public class Settings extends Reloadable {
         return this.infoSoldHeadsGUIItem.clone();
     }
 
+    public ItemStack getUnknownHeadItem() {
+        return this.unknownHeadItem.clone();
+    }
 
     public NavigationBar getNavBar() {
         return this.navBar;

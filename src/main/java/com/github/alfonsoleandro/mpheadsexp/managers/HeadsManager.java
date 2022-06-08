@@ -4,8 +4,8 @@ import com.github.alfonsoleandro.mpheadsexp.HeadsExp;
 import com.github.alfonsoleandro.mpheadsexp.managers.utils.MobHeadData;
 import com.github.alfonsoleandro.mpheadsexp.managers.utils.PlayerHeadData;
 import com.github.alfonsoleandro.mpheadsexp.managers.utils.PlayerHeadDataValues;
+import com.github.alfonsoleandro.mputils.itemstacks.MPItemStacks;
 import com.github.alfonsoleandro.mputils.reloadable.Reloadable;
-import com.github.alfonsoleandro.mputils.string.StringUtils;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import org.bukkit.Bukkit;
@@ -61,7 +61,7 @@ public class HeadsManager extends Reloadable {
                                         mobType,
                                         mobHeads.getInt(mobType + ".exp"),
                                         mobHeads.getInt(mobType + ".price")
-                                        ),
+                                ),
                                 mobHeads.getInt(mobType+".required level")
                         )
                 );
@@ -111,8 +111,17 @@ public class HeadsManager extends Reloadable {
 
 
     private ItemStack createSkull(String url, String mobType, int xp, int price){
+        Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("%type%", mobType);
+        placeholders.put("%xp%", String.valueOf(xp));
+        placeholders.put("%balance%", String.valueOf(price));
+        ItemStack head = MPItemStacks.replacePlaceholders(MPItemStacks.newItemStack(Material.PLAYER_HEAD,
+                        1,
+                        this.settings.getHeadsName(),
+                        this.settings.getHeadsLore()),
+                placeholders);
+
         String skullUrl = "http://textures.minecraft.net/texture/"+ url;
-        ItemStack head = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta skullMeta = (SkullMeta) head.getItemMeta();
 
         //SET SKIN
@@ -129,24 +138,6 @@ public class HeadsManager extends Reloadable {
             e1.printStackTrace();
         }
 
-        //SET NAME
-        skullMeta.setDisplayName(StringUtils.colorizeString('&',
-                this.settings.getHeadsName()
-                        .replace("%type%", mobType)
-                        .replace("%xp%", String.valueOf(xp))
-                        .replace("%money%", String.valueOf(price)))
-        );
-
-        //SET LORE
-        List<String> lore = new ArrayList<>();
-        for(String line : this.settings.getHeadsLore()){
-            lore.add(StringUtils.colorizeString('&', line
-                    .replace("%type%", mobType)
-                    .replace("%xp%", String.valueOf(xp))
-                    .replace("%money%", String.valueOf(price))));
-        }
-        skullMeta.setLore(lore);
-
         skullMeta.getPersistentDataContainer().set(new NamespacedKey(this.plugin, "MPHeads"),
                 PersistentDataType.STRING, "HEAD:"+mobType);
 
@@ -156,26 +147,19 @@ public class HeadsManager extends Reloadable {
     }
 
     private ItemStack createPlayerHead(String playerName, double xp, double price){
-        ItemStack head = new ItemStack(Material.PLAYER_HEAD);
+        Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("%player%", playerName);
+        placeholders.put("%xp%", String.valueOf(xp));
+        placeholders.put("%balance%", String.valueOf(price));
+        ItemStack head = MPItemStacks.replacePlaceholders(MPItemStacks.newItemStack(Material.PLAYER_HEAD,
+                        1,
+                        this.settings.getPlayerHeadsName(),
+                        this.settings.getPlayerHeadsLore()),
+                placeholders);
+
         SkullMeta skullMeta = (SkullMeta) head.getItemMeta();
         assert skullMeta != null;
         skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(playerName));
-
-        skullMeta.setDisplayName(StringUtils.colorizeString('&',
-                this.settings.getPlayerHeadsName()
-                        .replace("%player%", playerName)
-                        .replace("%xp%", String.valueOf(xp))
-                        .replace("%balance%", String.valueOf(price))));
-
-        List<String> lore = new ArrayList<>();
-        for(String line : this.settings.getPlayerHeadsLore()){
-            lore.add(StringUtils.colorizeString('&', line
-                    .replace("%player%", playerName)
-                    .replace("%xp%", String.valueOf(xp))
-                    .replace("%balance%", String.valueOf(price))));
-        }
-        skullMeta.setLore(lore);
-
         head.setItemMeta(skullMeta);
 
         return head;
